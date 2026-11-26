@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Administración — Camila Accesorios</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body class="admin-body">
+  <!-- Barra superior del panel -->
+  <header class="admin-topbar">
+    <div class="container admin-topbar-inner">
+      <div>
+        <strong>Camila Accesorios · Panel de gestión</strong>
+        <small id="info-usuario-activo">Verificando sesión...</small>
+      </div>
+      <div class="admin-topbar-actions">
+        <a href="index.html" target="_blank" class="btn btn-outline btn-sm">Ver tienda</a>
+        <button type="button" id="btn-logout" class="btn btn-danger btn-sm">Cerrar sesión</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container admin-main">
+    <!-- Navegación por pestañas -->
+    <nav class="admin-tabs" role="tablist">
+      <button type="button" class="tab-btn active" data-tab="sec-productos">Productos</button>
+      <button type="button" class="tab-btn" data-tab="sec-categorias">Categorías</button>
+      <button type="button" class="tab-btn" data-tab="sec-faq">Preguntas frecuentes</button>
+      <button type="button" class="tab-btn" data-tab="sec-resenas">Clientas felices</button>
+      <button type="button" class="tab-btn" data-tab="sec-capturas">Capturas</button>
+      <button type="button" class="tab-btn" data-tab="sec-config">Configuración</button>
+      <button type="button" class="tab-btn" id="tab-usuarios" data-tab="sec-usuarios">Usuarios</button>
+    </nav>
+
+    <!-- 1. PRODUCTOS -->
+    <section id="sec-productos" class="tab-panel active">
+      <div class="panel-grid">
+        <div class="panel-card">
+          <h2 id="titulo-form-producto">Agregar producto</h2>
+          <form id="form-producto" class="admin-form">
+            <input type="hidden" id="prod-id" />
+            <div class="form-group">
+              <label for="prod-nombre">Nombre del producto</label>
+              <input type="text" id="prod-nombre" required />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="prod-categoria">Categoría</label>
+                <select id="prod-categoria"></select>
+              </div>
+              <div class="form-group">
+                <label for="prod-precio">Precio</label>
+                <input type="number" id="prod-precio" step="0.01" min="0" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="prod-estado">Estado</label>
+                <select id="prod-estado">
+                  <option value="disponible">Disponible</option>
+                  <option value="agotado">Agotado</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="prod-orden">Orden</label>
+                <input type="number" id="prod-orden" value="0" />
+              </div>
+            </div>
+            <div class="form-checks">
+              <label><input type="checkbox" id="prod-es-desde" /> Mostrar como "Desde [precio]"</label>
+              <label><input type="checkbox" id="prod-destacado" /> Destacado</label>
+            </div>
+            <div class="form-group">
+              <label for="prod-descripcion">Descripción</label>
+              <textarea id="prod-descripcion" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="prod-archivo">Subir foto del producto</label>
+              <input type="file" id="prod-archivo" accept="image/*" />
+            </div>
+            <div class="form-group">
+              <label for="prod-imagen-url">O URL de imagen actual</label>
+              <input type="url" id="prod-imagen-url" placeholder="https://..." />
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Guardar producto</button>
+              <button type="button" id="btn-cancelar-prod" class="btn btn-outline">Cancelar</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel-card">
+          <h2>Productos guardados</h2>
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Imagen</th>
+                  <th>Producto</th>
+                  <th>Categoría</th>
+                  <th>Precio</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-productos"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. CATEGORÍAS -->
+    <section id="sec-categorias" class="tab-panel">
+      <div class="panel-grid">
+        <div class="panel-card">
+          <h2>Agregar / editar categoría</h2>
+          <form id="form-categoria" class="admin-form">
+            <input type="hidden" id="cat-id" />
+            <div class="form-group">
+              <label for="cat-nombre">Nombre de categoría</label>
+              <input type="text" id="cat-nombre" required />
+            </div>
+            <div class="form-group">
+              <label for="cat-slug">Identificador (slug)</label>
+              <input type="text" id="cat-slug" required placeholder="ej. aretes-acero" />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="cat-orden">Orden</label>
+                <input type="number" id="cat-orden" value="0" />
+              </div>
+              <div class="form-group">
+                <label for="cat-activa">Estado</label>
+                <select id="cat-activa">
+                  <option value="true">Activa</option>
+                  <option value="false">Inactiva</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Guardar categoría</button>
+              <button type="button" id="btn-cancelar-cat" class="btn btn-outline">Cancelar</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel-card">
+          <h2>Categorías guardadas</h2>
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Slug</th>
+                  <th>Orden</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-categorias"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. PREGUNTAS FRECUENTES -->
+    <section id="sec-faq" class="tab-panel">
+      <div class="panel-grid">
+        <div class="panel-card">
+          <h2>Agregar / editar pregunta</h2>
+          <form id="form-faq" class="admin-form">
+            <input type="hidden" id="faq-id" />
+            <div class="form-group">
+              <label for="faq-pregunta">Pregunta</label>
+              <input type="text" id="faq-pregunta" required />
+            </div>
+            <div class="form-group">
+              <label for="faq-respuesta">Respuesta</label>
+              <textarea id="faq-respuesta" rows="3" required></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="faq-orden">Orden</label>
+                <input type="number" id="faq-orden" value="0" />
+              </div>
+              <div class="form-group">
+                <label for="faq-activa">Estado</label>
+                <select id="faq-activa">
+                  <option value="true">Activa</option>
+                  <option value="false">Inactiva</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Guardar pregunta</button>
+              <button type="button" id="btn-cancelar-faq" class="btn btn-outline">Cancelar</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel-card">
+          <h2>Preguntas frecuentes guardadas</h2>
+          <div class="table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Pregunta</th>
+                  <th>Orden</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-faq"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. CLIENTAS FELICES -->
+    <section id="sec-resenas" class="tab-panel">
+      <div class="panel-card">
+        <div class="card-header-flex">
+          <h2>Comentarios recibidos</h2>
+          <select id="filtro-estado-resenas">
+            <option value="todos">Todos</option>
+            <option value="pendiente">Pendientes</option>
+            <option value="aprobado">Aprobados</option>
+            <option value="rechazado">Rechazados</option>
+            <option value="inactivo">Inactivos</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Clienta</th>
+                <th>Comentario</th>
+                <th>Estrellas</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-resenas"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. CAPTURAS -->
+    <section id="sec-capturas" class="tab-panel">
+      <div class="panel-grid">
+        <div class="panel-card">
+          <h2>Agregar captura de WhatsApp</h2>
+          <p class="texto-suave">Oculta números y datos personales antes de subir la imagen.</p>
+          <form id="form-captura" class="admin-form">
+            <input type="hidden" id="cap-id" />
+            <div class="form-group">
+              <label for="cap-archivo">Subir imagen de captura</label>
+              <input type="file" id="cap-archivo" accept="image/*" />
+            </div>
+            <div class="form-group">
+              <label for="cap-url">O URL de captura</label>
+              <input type="url" id="cap-url" placeholder="https://..." />
+            </div>
+            <div class="form-group">
+              <label for="cap-descripcion">Descripción corta</label>
+              <input type="text" id="cap-descripcion" />
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="cap-orden">Orden</label>
+                <input type="number" id="cap-orden" value="0" />
+              </div>
+              <div class="form-group">
+                <label for="cap-activa">Estado</label>
+                <select id="cap-activa">
+                  <option value="true">Activa</option>
+                  <option value="false">Inactiva</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Guardar captura</button>
+              <button type="button" id="btn-cancelar-cap" class="btn btn-outline">Cancelar</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="panel-card">
+          <h2>Capturas guardadas</h2>
+          <div id="grid-admin-capturas" class="grid-capturas"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. CONFIGURACIÓN -->
+    <section id="sec-config" class="tab-panel">
+      <div class="panel-card max-w-md">
+        <h2>Configuración de Camila Accesorios</h2>
+        <form id="form-config" class="admin-form">
+          <div class="form-group">
+            <label for="cfg-marca">Nombre de la marca</label>
+            <input type="text" id="cfg-marca" required />
+          </div>
+          <div class="form-group">
+            <label for="cfg-lema">Lema o descripción corta</label>
+            <input type="text" id="cfg-lema" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cfg-wa">Número WhatsApp (con código país, sin +)</label>
+              <input type="text" id="cfg-wa" required placeholder="51900000000" />
+            </div>
+            <div class="form-group">
+              <label for="cfg-moneda">Símbolo de moneda</label>
+              <input type="text" id="cfg-moneda" required placeholder="S/" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="cfg-mensaje-wa">Mensaje inicial de WhatsApp</label>
+            <input type="text" id="cfg-mensaje-wa" />
+          </div>
+          <div class="form-group">
+            <label for="cfg-fb">URL Facebook</label>
+            <input type="url" id="cfg-fb" placeholder="https://facebook.com/..." />
+          </div>
+          <div class="form-group">
+            <label for="cfg-ig">URL Instagram</label>
+            <input type="url" id="cfg-ig" placeholder="https://instagram.com/..." />
+          </div>
+          <div class="form-group">
+            <label for="cfg-tt">URL TikTok</label>
+            <input type="url" id="cfg-tt" placeholder="https://tiktok.com/@..." />
+          </div>
+          <button type="submit" class="btn btn-primary">Guardar configuración</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- 7. USUARIOS (Solo visible para rol 'admin') -->
+    <section id="sec-usuarios" class="tab-panel">
+      <div class="panel-card">
+        <h2>Usuarios y roles del panel</h2>
+        <p class="texto-suave">Para crear un nuevo acceso, regístralo primero en Supabase Authentication &gt; Users y luego asigna su rol aquí.</p>
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-usuarios"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Cambio de pestañas en el panel
+    document.querySelectorAll('.tab-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach((p) => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab)?.classList.add('active');
+      });
+    });
+  </script>
+  <script type="module" src="./js/admin.js"></script>
+</body>
+</html>
