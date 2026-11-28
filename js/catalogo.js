@@ -53,7 +53,7 @@ async function cargarConfiguracion() {
 
     if (data.moneda) state.moneda = data.moneda;
     if (data.whatsapp) {
-      state.whatsapp = data.whatsapp.replace(/\D/g, '');
+      state.whatsapp = String(data.whatsapp).replace(/\D/g, '');
       const urlWa = `https://wa.me/${state.whatsapp}?text=${encodeURIComponent('Hola, deseo consultar sobre sus accesorios.')}`;
       const topWa = document.getElementById('topbar-whatsapp-link');
       const footWa = document.getElementById('footer-whatsapp');
@@ -92,26 +92,67 @@ async function cargarConfiguracion() {
   }
 }
 
+function esDesdePrecio(prod) {
+  return Boolean(prod.es_desde || prod.mostrar_desde);
+}
+
+function esNovedad(prod) {
+  return Boolean(prod.novedad || prod.es_novedad || prod.destacado);
+}
+
+function perteneceACategoria(prod, cat) {
+  if (prod.categoria_id !== undefined && prod.categoria_id !== null) {
+    return String(prod.categoria_id) === String(cat.id);
+  }
+  if (prod.categoria && cat.nombre) {
+    return String(prod.categoria).toLowerCase().trim() === String(cat.nombre).toLowerCase().trim();
+  }
+  return false;
+}
+
 async function cargarDatos() {
   await cargarConfiguracion();
 
-  const [{ data: cats }, { data: prods, error }] = await Promise.all([
-    supabase.from('categorias').select('*').order('nombre', { ascending: true }),
-    supabase.from('productos').select('*').order('created_at', { ascending: false })
+  const [
+    { data: cats, error: errCats },
+    { data: prods, error: errProds }
+  ] = await Promise.all([
+    supabase
+      .from('categorias')
+      .select('*')
+      .order('orden', { ascending: true })
+      .order('nombre', { ascending: true }),
+    supabase
+      .from('productos')
+      .select('*')
+      .order('creado_en', { ascending: false })
   ]);
 
-  if (error) {
-    els.grid.innerHTML = `<p class="empty-state">No se pudieron cargar los productos.</p>`;
+  if (errProds) {
+    console.error('Error cargando productos:', errProds);
+    els.grid.innerHTML = `<p class="empty-state">Error al cargar productos: ${errProds.message}</p>`;
     els.contadorResultados.textContent = '0 productos encontrados';
     return;
   }
 
-  state.categorias = cats || [];
-  state.productos = (prods || []).filter((p) => p.estado !== 'Agotado');
+  if (errCats) {
+    console.error('Error cargando categorías:', errCats);
+  }
 
-  // Ajustar rango de precio máximo dinámicamente según el mayor precio existente
+  // Filtrar categorías activas (si activa es null o undefined, se consideran activas)
+  state.categorias = (cats || []).filter((c) => c.activa !== false);
+
+  // Filtrar productos activos
+  state.productos = (prods || []).filter((p) => {
+    const estado = (p.estado || '').toString().toLowerCase().trim();
+    return estado !== 'agotado' && estado !== 'inactivo' && estado !== 'oculto';
+  });
+
   const precios = state.productos.map((p) => Number(p.precio) || 0);
-  const maxPrecioReal = precios.length ? Math.max(100, Math.ceil(Math.max(...precios) / 10) * 10) : 100;
+  const maxPrecioReal = precios.length
+    ? Math.max(100, Math.ceil(Math.max(...precios) / 10) * 10)
+    : 100;
+
   els.rangoPrecio.max = String(maxPrecioReal);
   els.rangoPrecio.value = String(maxPrecioReal);
   state.precioMax = maxPrecioReal;
@@ -128,9 +169,7 @@ function renderCategorias() {
   }
 
   const itemsHtml = state.categorias.map((cat) => {
-    const cantidad = state.productos.filter(
-      (p) => String(p.categoria_id) === String(cat.id) || p.categoria === cat.nombre
-    ).length;
+    const cantidad = state.productos.filter((p) => perteneceACategoria(p, cat)).length;
     const activa = String(state.categoriaActiva) === String(cat.id) ? 'is-active' : '';
     return `
       <li>
@@ -163,7 +202,7 @@ function renderCategorias() {
 function renderColores() {
   const coloresUnicos = [...new Set(
     state.productos
-      .map((p) => (p.color || '').trim())
+      .map((p) => (p.color || '').toString().trim())
       .filter(Boolean)
   )];
 
@@ -177,16 +216,16 @@ function renderColores() {
 }
 
 function obtenerNombreCategoria(prod) {
-  const encontrada = state.categorias.find((c) => String(c.id) === String(prod.categoria_id));
+  const encontrada = state.categorias.find((c) => perteneceACategoria(prod, c));
   return encontrada ? encontrada.nombre : (prod.categoria || 'Accesorios');
 }
 
-function esNovedad(prod) {
-  return Boolean(prod.novedad || prod.es_novedad || prod.destacado);
-}
-
 function filtrarYOrdenar() {
-  let lista = state.productos.filter((prod) => {
+  const categoriaSeleccionada = state.categorias.find(
+    (c) => String(c.id) === String(state.categoriaActiva)
+  );
+
+  const lista = state.productos.filter((prod) => {
     const precio = Number(prod.precio) || 0;
     const nombre = (prod.nombre || '').toLowerCase();
     const desc = (prod.descripcion || '').toLowerCase();
@@ -194,12 +233,12 @@ function filtrarYOrdenar() {
 
     const pasaCategoria =
       state.categoriaActiva === 'todas' ||
-      String(prod.categoria_id) === String(state.categoriaActiva);
+      (categoriaSeleccionada ? perteneceACategoria(prod, categoriaSeleccionada) : false);
 
     const pasaPrecio = precio <= state.precioMax;
     const pasaColor =
       state.colorActivo === 'todos' ||
-      (prod.color || '').toLowerCase() === state.colorActivo.toLowerCase();
+      (prod.color || '').toString().toLowerCase().trim() === state.colorActivo.toLowerCase().trim();
 
     const pasaBusqueda = !q || nombre.includes(q) || desc.includes(q);
     const pasaNovedad = !state.soloNovedades || esNovedad(prod);
@@ -213,6 +252,12 @@ function filtrarYOrdenar() {
     lista.sort((a, b) => (Number(b.precio) || 0) - (Number(a.precio) || 0));
   } else if (state.orden === 'nombre') {
     lista.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+  } else {
+    lista.sort((a, b) => {
+      const ordDiff = (Number(a.orden) || 0) - (Number(b.orden) || 0);
+      if (ordDiff !== 0) return ordDiff;
+      return new Date(b.creado_en || 0) - new Date(a.creado_en || 0);
+    });
   }
 
   return lista;
@@ -228,8 +273,8 @@ function renderCatalogo() {
   }
 
   els.grid.innerHTML = filtrados.map((prod) => {
-    const imgUrl = prod.imagen_url || prod.imagen || 'https://via.placeholder.com/400x400?text=Camila+Accesorios';
-    const precioTexto = prod.mostrar_desde
+    const imgUrl = prod.imagen_url || 'https://via.placeholder.com/400x400?text=Camila+Accesorios';
+    const precioTexto = esDesdePrecio(prod)
       ? `Desde ${formatearPrecio(prod.precio)}`
       : formatearPrecio(prod.precio);
 
@@ -258,11 +303,11 @@ function renderCatalogo() {
 
 function abrirDetalle(prod) {
   state.productoSeleccionado = prod;
-  els.detalleImg.src = prod.imagen_url || prod.imagen || 'https://via.placeholder.com/400x400?text=Camila+Accesorios';
+  els.detalleImg.src = prod.imagen_url || 'https://via.placeholder.com/400x400?text=Camila+Accesorios';
   els.detalleImg.alt = prod.nombre;
   els.detalleCat.textContent = obtenerNombreCategoria(prod);
   els.detalleTitulo.textContent = prod.nombre;
-  els.detallePrecio.textContent = prod.mostrar_desde
+  els.detallePrecio.textContent = esDesdePrecio(prod)
     ? `Desde ${formatearPrecio(prod.precio)}`
     : formatearPrecio(prod.precio);
   els.detalleDesc.textContent = prod.descripcion || 'Accesorio artesanal hecho con dedicación.';
@@ -284,7 +329,7 @@ els.detalleAgregar?.addEventListener('click', () => {
       id: state.productoSeleccionado.id,
       nombre: state.productoSeleccionado.nombre,
       precio: Number(state.productoSeleccionado.precio) || 0,
-      imagen: state.productoSeleccionado.imagen_url || state.productoSeleccionado.imagen || ''
+      imagen: state.productoSeleccionado.imagen_url || ''
     }
   }));
   els.modalDetalle.hidden = true;
