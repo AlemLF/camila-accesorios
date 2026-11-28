@@ -31,7 +31,8 @@ const state = {
   orden: 'recientes',
   soloNovedades: false,
   moneda: 'S/',
-  whatsapp: '',
+  whatsapp: '51900000000',
+  mensajeBaseWa: 'Hola, deseo consultar sobre sus accesorios.',
   productoSeleccionado: null
 };
 
@@ -143,7 +144,7 @@ function renderizarBolsa() {
   els.itemsBolsa.querySelectorAll('[data-restar-bolsa]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const lista = leerBolsa();
-      const i = Number(btn.dataset.restarBolsa);
+      const i = Number(btn.dataset.restar-bolsa);
       if (lista[i]) {
         if ((Number(lista[i].cantidad) || 1) > 1) {
           lista[i].cantidad -= 1;
@@ -157,32 +158,62 @@ function renderizarBolsa() {
   });
 }
 
+function aplicarEnlacesContacto() {
+  const numeroLimpio = String(state.whatsapp || '').replace(/\D/g, '') || '51900000000';
+  const urlWa = `https://wa.me/${numeroLimpio}?text=${encodeURIComponent(state.mensajeBaseWa || 'Hola, deseo consultar sobre sus accesorios.')}`;
+
+  const topWa = document.getElementById('topbar-whatsapp-link');
+  const footWa = document.getElementById('footer-whatsapp');
+
+  [topWa, footWa].forEach((enlace) => {
+    if (!enlace) return;
+    enlace.href = urlWa;
+    enlace.target = '_blank';
+    enlace.rel = 'noopener noreferrer';
+  });
+}
+
 async function cargarConfiguracion() {
+  aplicarEnlacesContacto();
+
   try {
-    const { data, error } = await supabase
-      .from('configuracion')
-      .select('*')
-      .limit(1)
-      .maybeSingle();
+    const [{ data: sitio }, { data: cfg }] = await Promise.all([
+      supabase.from('configuracion_sitio').select('*').limit(1).maybeSingle(),
+      supabase.from('configuracion').select('*').limit(1).maybeSingle()
+    ]);
 
-    if (error || !data) return;
+    const data = { ...(cfg || {}), ...(sitio || {}) };
+    if (!data || !Object.keys(data).length) return;
 
-    if (data.moneda) state.moneda = data.moneda;
-    if (data.whatsapp) {
-      state.whatsapp = String(data.whatsapp).replace(/\D/g, '');
-      const urlWa = `https://wa.me/${state.whatsapp}?text=${encodeURIComponent('Hola, deseo consultar sobre sus accesorios.')}`;
-      const topWa = document.getElementById('topbar-whatsapp-link');
-      const footWa = document.getElementById('footer-whatsapp');
-      if (topWa) topWa.href = urlWa;
-      if (footWa) footWa.href = urlWa;
+    const moneda = data.moneda_simbolo || data.moneda;
+    if (moneda) state.moneda = moneda;
+
+    const wa = data.whatsapp_numero || data.whatsapp;
+    if (wa) {
+      const limpio = String(wa).replace(/\D/g, '');
+      if (limpio) state.whatsapp = limpio;
     }
-    if (data.nombre_negocio) {
-      document.title = `${data.nombre_negocio} — Catálogo`;
+
+    if (data.mensaje_base_wa) {
+      state.mensajeBaseWa = data.mensaje_base_wa;
+    }
+
+    aplicarEnlacesContacto();
+
+    const nombreMarca = data.nombre_marca || data.nombre_negocio;
+    if (nombreMarca) {
+      document.title = `${nombreMarca} — Catálogo`;
       const brandEl = document.getElementById('brand-name');
       const footMarca = document.getElementById('footer-marca');
-      if (brandEl) brandEl.textContent = data.nombre_negocio;
-      if (footMarca) footMarca.textContent = data.nombre_negocio;
+      if (brandEl) brandEl.textContent = nombreMarca;
+      if (footMarca) footMarca.textContent = nombreMarca;
     }
+
+    if (data.lema) {
+      const taglineEl = document.getElementById('brand-tagline');
+      if (taglineEl) taglineEl.textContent = data.lema;
+    }
+
     if (data.hero_titulo) {
       const heroTitle = document.getElementById('hero-titulo');
       if (heroTitle) heroTitle.textContent = data.hero_titulo;
@@ -195,16 +226,30 @@ async function cargarConfiguracion() {
       const heroImg = document.getElementById('hero-imagen');
       if (heroImg) heroImg.src = data.hero_imagen;
     }
-    if (data.instagram) {
-      const ig = document.getElementById('footer-instagram');
-      if (ig) ig.href = data.instagram;
+
+    const igUrl = data.url_instagram || data.instagram;
+    const igEl = document.getElementById('footer-instagram');
+    if (igEl) {
+      if (igUrl) {
+        igEl.href = igUrl;
+        igEl.style.display = 'inline-flex';
+      } else {
+        igEl.style.display = 'none';
+      }
     }
-    if (data.facebook) {
-      const fb = document.getElementById('footer-facebook');
-      if (fb) fb.href = data.facebook;
+
+    const fbUrl = data.url_facebook || data.facebook;
+    const fbEl = document.getElementById('footer-facebook');
+    if (fbEl) {
+      if (fbUrl) {
+        fbEl.href = fbUrl;
+        fbEl.style.display = 'inline-flex';
+      } else {
+        fbEl.style.display = 'none';
+      }
     }
   } catch (_) {
-    // Continúa con valores por defecto
+    aplicarEnlacesContacto();
   }
 }
 
@@ -602,8 +647,8 @@ els.btnEnviarWhatsapp?.addEventListener('click', () => {
     return `• ${i.nombre} (x${cant}) - ${prefijo}${formatearPrecio(precio * cant)}`;
   });
   const total = items.reduce((acc, i) => acc + (Number(i.precio) || 0) * (Number(i.cantidad) || 1), 0);
-  const texto = `Hola Camila Accesorios, deseo realizar el siguiente pedido:\n${lineas.join('\n')}\nTotal estimado: ${formatearPrecio(total)}`;
-  const numero = state.whatsapp || '51900000000';
+  const texto = `${state.mensajeBaseWa || 'Hola Camila Accesorios, deseo realizar el siguiente pedido:'}\n${lineas.join('\n')}\nTotal estimado: ${formatearPrecio(total)}`;
+  const numero = String(state.whatsapp || '').replace(/\D/g, '') || '51900000000';
   window.open(`https://wa.me/${numero}?text=${encodeURIComponent(texto)}`, '_blank', 'noopener,noreferrer');
 });
 
