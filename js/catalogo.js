@@ -123,7 +123,7 @@ function renderizarBolsa() {
   els.itemsBolsa.querySelectorAll('[data-restar-bolsa]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const lista = leerBolsa();
-      const i = Number(btn.dataset.restarBolsa);
+      const i = Number(btn.dataset.restar-bolsa);
       if (lista[i]) {
         if ((Number(lista[i].cantidad) || 1) > 1) {
           lista[i].cantidad -= 1;
@@ -408,19 +408,38 @@ function abrirDetalle(prod) {
   els.modalDetalle.hidden = false;
 }
 
-function mostrarTodoElCatalogo({ scroll = false } = {}) {
+function actualizarEstadoMenu(seccionActiva) {
+  document.querySelectorAll('.nav-menu .nav-link').forEach((link) => {
+    const href = link.getAttribute('href') || '';
+    const esNovedadLink = link.id === 'nav-novedades';
+    let activa = false;
+
+    if (seccionActiva === 'inicio') {
+      activa = href === '#inicio';
+    } else if (seccionActiva === 'novedades') {
+      activa = esNovedadLink;
+    } else if (seccionActiva === 'catalogo') {
+      activa = href === '#catalogo-seccion' && !esNovedadLink;
+    } else if (seccionActiva === 'contacto') {
+      activa = href === '#contacto-seccion';
+    }
+
+    link.classList.toggle('is-active', activa);
+  });
+}
+
+function mostrarCatalogoCompleto({ scroll = true } = {}) {
   state.soloNovedades = false;
   state.categoriaActiva = 'todas';
   renderCategorias();
   renderCatalogo();
+  actualizarEstadoMenu('catalogo');
 
   if (scroll) {
-    const seccionCatalogo =
-      document.getElementById('catalogo') ||
-      document.getElementById('sec-catalogo') ||
-      els.grid?.closest('section') ||
-      els.grid;
-    seccionCatalogo?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('catalogo-seccion')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
   }
 }
 
@@ -504,25 +523,35 @@ els.selectOrden?.addEventListener('change', (e) => {
   renderCatalogo();
 });
 
-els.navNovedades?.addEventListener('click', () => {
-  state.soloNovedades = true;
-  renderCatalogo();
+document.querySelectorAll('.nav-menu .nav-link').forEach((link) => {
+  const href = link.getAttribute('href') || '';
+  const esNovedadLink = link.id === 'nav-novedades';
+
+  if (esNovedadLink) {
+    link.addEventListener('click', () => {
+      state.soloNovedades = true;
+      renderCatalogo();
+      actualizarEstadoMenu('novedades');
+    });
+  } else if (href === '#catalogo-seccion') {
+    link.addEventListener('click', () => {
+      mostrarCatalogoCompleto({ scroll: true });
+    });
+  } else if (href === '#inicio') {
+    link.addEventListener('click', () => {
+      state.soloNovedades = false;
+      renderCatalogo();
+      actualizarEstadoMenu('inicio');
+    });
+  } else if (href === '#contacto-seccion') {
+    link.addEventListener('click', () => {
+      actualizarEstadoMenu('contacto');
+    });
+  }
 });
 
-document.getElementById('nav-catalogo')?.addEventListener('click', () => {
-  mostrarTodoElCatalogo({ scroll: true });
-});
-
-document.getElementById('nav-inicio')?.addEventListener('click', () => {
-  state.soloNovedades = false;
-  renderCatalogo();
-});
-
-document.querySelectorAll('a[href="#catalogo"], [data-nav="catalogo"]').forEach((el) => {
-  if (el.id === 'nav-catalogo') return;
-  el.addEventListener('click', () => {
-    mostrarTodoElCatalogo({ scroll: true });
-  });
+document.querySelector('.hero__box a[href="#catalogo-seccion"]')?.addEventListener('click', () => {
+  mostrarCatalogoCompleto({ scroll: true });
 });
 
 els.btnLimpiar?.addEventListener('click', () => {
@@ -541,6 +570,7 @@ els.btnLimpiar?.addEventListener('click', () => {
 
   renderCategorias();
   renderCatalogo();
+  actualizarEstadoMenu('catalogo');
 });
 
 cargarDatos();
