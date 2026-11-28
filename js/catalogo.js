@@ -408,6 +408,22 @@ function abrirDetalle(prod) {
   els.modalDetalle.hidden = false;
 }
 
+function mostrarTodoElCatalogo({ scroll = false } = {}) {
+  state.soloNovedades = false;
+  state.categoriaActiva = 'todas';
+  renderCategorias();
+  renderCatalogo();
+
+  if (scroll) {
+    const seccionCatalogo =
+      document.getElementById('catalogo') ||
+      document.getElementById('sec-catalogo') ||
+      els.grid?.closest('section') ||
+      els.grid;
+    seccionCatalogo?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
 els.cerrarDetalle?.addEventListener('click', () => {
   els.modalDetalle.hidden = true;
 });
@@ -491,6 +507,22 @@ els.selectOrden?.addEventListener('change', (e) => {
 els.navNovedades?.addEventListener('click', () => {
   state.soloNovedades = true;
   renderCatalogo();
+});
+
+document.getElementById('nav-catalogo')?.addEventListener('click', () => {
+  mostrarTodoElCatalogo({ scroll: true });
+});
+
+document.getElementById('nav-inicio')?.addEventListener('click', () => {
+  state.soloNovedades = false;
+  renderCatalogo();
+});
+
+document.querySelectorAll('a[href="#catalogo"], [data-nav="catalogo"]').forEach((el) => {
+  if (el.id === 'nav-catalogo') return;
+  el.addEventListener('click', () => {
+    mostrarTodoElCatalogo({ scroll: true });
+  });
 });
 
 els.btnLimpiar?.addEventListener('click', () => {
