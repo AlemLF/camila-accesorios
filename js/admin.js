@@ -27,9 +27,62 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('btn-logout')?.addEventListener('click', logout);
 
+  registrarEventosPestanas();
   registrarEventosFormularios();
   await cargarTodo();
 });
+
+// ==========================================
+// NAVEGACIÓN POR PESTAÑAS DEL PANEL
+// ==========================================
+function resolverPanelPestana(targetId) {
+  if (!targetId) return null;
+  return (
+    document.getElementById(targetId) ||
+    document.querySelector(`[data-panel="${targetId}"]`) ||
+    document.querySelector(`.tab-panel[data-tab="${targetId}"]`)
+  );
+}
+
+function activarPestana(targetId) {
+  const botones = document.querySelectorAll('.tab-btn[data-tab]');
+  if (!botones.length) return;
+
+  const paneles = Array.from(botones)
+    .map((b) => resolverPanelPestana(b.dataset.tab))
+    .filter(Boolean);
+
+  botones.forEach((btn) => {
+    const esActiva = btn.dataset.tab === targetId;
+    btn.classList.toggle('active', esActiva);
+    btn.setAttribute('aria-selected', String(esActiva));
+  });
+
+  paneles.forEach((panel) => {
+    const coincide =
+      panel.id === targetId ||
+      panel.dataset.panel === targetId ||
+      panel.dataset.tab === targetId;
+    panel.classList.toggle('active', coincide);
+    panel.hidden = !coincide;
+  });
+}
+
+function registrarEventosPestanas() {
+  const botones = document.querySelectorAll('.tab-btn[data-tab]');
+  if (!botones.length) return;
+
+  botones.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      activarPestana(btn.dataset.tab);
+    });
+  });
+
+  const inicial =
+    document.querySelector('.tab-btn.active[data-tab]')?.dataset.tab ||
+    botones[0].dataset.tab;
+  activarPestana(inicial);
+}
 
 async function cargarTodo() {
   await Promise.all([
@@ -123,7 +176,7 @@ function renderTablaProductos() {
 
   tbody.innerHTML = productosCache.map((p) => {
     const precioFmt = `${p.es_desde ? 'Desde ' : ''}${Number(p.precio).toFixed(2)}`;
-    const catNombre = p.categorias?.nombre || 'Sin categoría';
+    const catNombre = p.categorias?.nombre || p.categoria || 'Sin categoría';
     return `
       <tr>
         <td>
@@ -159,7 +212,9 @@ function editarProducto(id) {
   const prod = productosCache.find((item) => item.id === id);
   if (!prod) return;
 
-  document.getElementById('titulo-form-producto').textContent = 'Editar producto';
+  const tituloEl = document.getElementById('titulo-form-producto');
+  if (tituloEl) tituloEl.textContent = 'Editar producto';
+
   document.getElementById('prod-id').value = prod.id;
   document.getElementById('prod-nombre').value = prod.nombre || '';
   document.getElementById('prod-categoria').value = prod.categoria_id || '';
@@ -171,10 +226,16 @@ function editarProducto(id) {
   document.getElementById('prod-descripcion').value = prod.descripcion || '';
   document.getElementById('prod-imagen-url').value = prod.imagen_url || '';
   document.getElementById('prod-archivo').value = '';
+
+  const colorInput = document.getElementById('prod-color');
+  if (colorInput) colorInput.value = prod.color || '';
+
+  activarPestana('sec-productos');
 }
 
 function resetFormProducto() {
-  document.getElementById('titulo-form-producto').textContent = 'Agregar producto';
+  const tituloEl = document.getElementById('titulo-form-producto');
+  if (tituloEl) tituloEl.textContent = 'Agregar producto';
   document.getElementById('form-producto')?.reset();
   document.getElementById('prod-id').value = '';
 }
@@ -559,7 +620,6 @@ function renderTablaUsuarios() {
 // REGISTRO DE EVENTOS DE FORMULARIOS
 // ==========================================
 function registrarEventosFormularios() {
-  // Auto-generar slug al escribir nombre de categoría
   const inputCatNombre = document.getElementById('cat-nombre');
   const inputCatSlug = document.getElementById('cat-slug');
   inputCatNombre?.addEventListener('input', () => {
@@ -584,14 +644,22 @@ function registrarEventosFormularios() {
       }
 
       const categoriaRaw = document.getElementById('prod-categoria').value;
+      const esDesde = document.getElementById('prod-es-desde').checked;
+      const destacado = document.getElementById('prod-destacado').checked;
+      const colorVal = document.getElementById('prod-color')?.value.trim() || null;
+
       const payload = {
         nombre: document.getElementById('prod-nombre').value.trim(),
         categoria_id: categoriaRaw ? Number(categoriaRaw) : null,
         precio: Number(document.getElementById('prod-precio').value || 0),
         estado: document.getElementById('prod-estado').value,
         orden: Number(document.getElementById('prod-orden').value || 0),
-        es_desde: document.getElementById('prod-es-desde').checked,
-        destacado: document.getElementById('prod-destacado').checked,
+        es_desde: esDesde,
+        mostrar_desde: esDesde,
+        destacado,
+        novedad: destacado,
+        es_novedad: destacado,
+        color: colorVal,
         descripcion: document.getElementById('prod-descripcion').value.trim() || null,
         imagen_url
       };
@@ -756,3 +824,10 @@ function registrarEventosFormularios() {
     alert('Configuración actualizada.');
   });
 }
+```[cite: 13]
+
+### ¿Qué se añadió en este `js/admin.js`?
+* `registrarEventosPestanas()` y `activarPestana()`: ahora al hacer clic en cualquier `.tab-btn[data-tab]` se marca como `.active`, se oculta el panel anterior y se muestra el panel seleccionado.
+* Sincronización de `mostrar_desde`, `novedad` y `es_novedad` al guardar un producto, además de soportar `#prod-color` si llegas a añadirlo en el formulario.
+
+Sube este `js/admin.js` a tu repositorio en GitHub (`main`), espera a que termine el despliegue en Netlify y recarga `admin.html` con `Ctrl + Shift + R`. ¿Ya cambian de pestaña al hacer clic en el menú?
