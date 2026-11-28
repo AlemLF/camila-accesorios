@@ -173,6 +173,22 @@ function aplicarEnlacesContacto() {
   });
 }
 
+function configurarEnlaceRedSocial(elementoId, url) {
+  const el = document.getElementById(elementoId);
+  if (!el) return;
+
+  const limpia = String(url || '').trim();
+  if (limpia) {
+    el.href = limpia;
+    el.target = '_blank';
+    el.rel = 'noopener noreferrer';
+    el.style.display = 'inline-flex';
+  } else {
+    el.removeAttribute('href');
+    el.style.display = 'none';
+  }
+}
+
 async function cargarConfiguracion() {
   aplicarEnlacesContacto();
 
@@ -227,27 +243,9 @@ async function cargarConfiguracion() {
       if (heroImg) heroImg.src = data.hero_imagen;
     }
 
-    const igUrl = data.url_instagram || data.instagram;
-    const igEl = document.getElementById('footer-instagram');
-    if (igEl) {
-      if (igUrl) {
-        igEl.href = igUrl;
-        igEl.style.display = 'inline-flex';
-      } else {
-        igEl.style.display = 'none';
-      }
-    }
-
-    const fbUrl = data.url_facebook || data.facebook;
-    const fbEl = document.getElementById('footer-facebook');
-    if (fbEl) {
-      if (fbUrl) {
-        fbEl.href = fbUrl;
-        fbEl.style.display = 'inline-flex';
-      } else {
-        fbEl.style.display = 'none';
-      }
-    }
+    configurarEnlaceRedSocial('footer-instagram', data.url_instagram || data.instagram);
+    configurarEnlaceRedSocial('footer-facebook', data.url_facebook || data.facebook);
+    configurarEnlaceRedSocial('footer-tiktok', data.url_tiktok || data.tiktok);
   } catch (_) {
     aplicarEnlacesContacto();
   }
