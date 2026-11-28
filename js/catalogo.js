@@ -1,11 +1,30 @@
 import { supabase } from './supabase.js';
 
-const CLAVE_BOLSA = 'camila_accesorios_bolsa';
+const CLAVE_BOLSA = 'camila_accesorios_bolsa_v1';
+
+const PALETA_COLORES = [
+  'Rojo',
+  'Dorado',
+  'Plateado',
+  'Rosado',
+  'Fucsia',
+  'Celeste',
+  'Azul',
+  'Blanco',
+  'Negro',
+  'Verde',
+  'Morado',
+  'Lila',
+  'Amarillo',
+  'Coral',
+  'Beige'
+];
 
 const state = {
   productos: [],
   categorias: [],
   categoriaActiva: 'todas',
+  precioMin: 0,
   precioMax: 100,
   colorActivo: 'todos',
   busqueda: '',
@@ -52,7 +71,8 @@ function formatearPrecio(monto) {
 
 function leerBolsa() {
   try {
-    return JSON.parse(localStorage.getItem(CLAVE_BOLSA) || '[]');
+    const raw = JSON.parse(localStorage.getItem(CLAVE_BOLSA) || '[]');
+    return Array.isArray(raw) ? raw : [];
   } catch (_) {
     return [];
   }
@@ -123,7 +143,7 @@ function renderizarBolsa() {
   els.itemsBolsa.querySelectorAll('[data-restar-bolsa]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const lista = leerBolsa();
-      const i = Number(btn.dataset.restar-bolsa);
+      const i = Number(btn.dataset.restarBolsa);
       if (lista[i]) {
         if ((Number(lista[i].cantidad) || 1) > 1) {
           lista[i].cantidad -= 1;
@@ -196,6 +216,34 @@ function esNovedad(prod) {
   return Boolean(prod.novedad || prod.es_novedad || prod.destacado);
 }
 
+function capitalizarTexto(texto = '') {
+  const limpio = String(texto || '').trim().replace(/\s+/g, ' ');
+  if (!limpio) return '';
+  return limpio.charAt(0).toUpperCase() + limpio.slice(1).toLowerCase();
+}
+
+function obtenerColoresProducto(prod) {
+  const encontrados = new Set();
+
+  if (prod.color) {
+    String(prod.color)
+      .split(/[,/|-]+/)
+      .map((c) => capitalizarTexto(c))
+      .filter(Boolean)
+      .forEach((c) => encontrados.add(c));
+  }
+
+  const texto = `${prod.nombre || ''} ${prod.descripcion || ''}`.toLowerCase();
+  PALETA_COLORES.forEach((color) => {
+    const regex = new RegExp(`\\b${color.toLowerCase()}(?:a|as|os|s)?\\b`, 'i');
+    if (regex.test(texto)) {
+      encontrados.add(color);
+    }
+  });
+
+  return [...encontrados];
+}
+
 function perteneceACategoria(prod, cat) {
   if (prod.categoria_id !== undefined && prod.categoria_id !== null) {
     return String(prod.categoria_id) === String(cat.id);
@@ -204,6 +252,28 @@ function perteneceACategoria(prod, cat) {
     return String(prod.categoria).toLowerCase().trim() === String(cat.nombre).toLowerCase().trim();
   }
   return false;
+}
+
+function configurarRangoPrecio() {
+  if (!els.rangoPrecio || !els.valorPrecio) return;
+
+  const precios = state.productos
+    .map((p) => Number(p.precio) || 0)
+    .filter((n) => n > 0);
+
+  const minReal = precios.length ? Math.max(0, Math.floor(Math.min(...precios))) : 0;
+  const maxReal = precios.length
+    ? Math.max(50, Math.ceil(Math.max(...precios) / 5) * 5)
+    : 100;
+
+  state.precioMin = minReal;
+  state.precioMax = maxReal;
+
+  els.rangoPrecio.min = String(minReal);
+  els.rangoPrecio.max = String(maxReal);
+  els.rangoPrecio.step = '0.5';
+  els.rangoPrecio.value = String(maxReal);
+  els.valorPrecio.textContent = formatearPrecio(maxReal);
 }
 
 async function cargarDatos() {
@@ -241,16 +311,7 @@ async function cargarDatos() {
     return estado !== 'agotado' && estado !== 'inactivo' && estado !== 'oculto';
   });
 
-  const precios = state.productos.map((p) => Number(p.precio) || 0);
-  const maxPrecioReal = precios.length
-    ? Math.max(100, Math.ceil(Math.max(...precios) / 10) * 10)
-    : 100;
-
-  els.rangoPrecio.max = String(maxPrecioReal);
-  els.rangoPrecio.value = String(maxPrecioReal);
-  state.precioMax = maxPrecioReal;
-  els.valorPrecio.textContent = formatearPrecio(maxPrecioReal);
-
+  configurarRangoPrecio();
   renderCategorias();
   renderColores();
   renderCatalogo();
@@ -294,24 +355,49 @@ function renderCategorias() {
 }
 
 function renderColores() {
-  const coloresUnicos = [...new Set(
-    state.productos
-      .map((p) => (p.color || '').toString().trim())
-      .filter(Boolean)
-  )];
+  if (!els.selectColor) return;
+
+  const coloresSet = new Set();
+  state.productos.forEach((prod) => {
+    obtenerColoresProducto(prod).forEach((color) => coloresSet.add(color));
+  });
+
+  const coloresOrdenados = [...coloresSet].sort((a, b) => a.localeCompare(b, 'es'));
 
   els.selectColor.innerHTML = `<option value="todos">Todos los colores</option>`;
-  coloresUnicos.forEach((color) => {
+  coloresOrdenados.forEach((color) => {
     const opt = document.createElement('option');
     opt.value = color;
     opt.textContent = color;
     els.selectColor.appendChild(opt);
   });
+
+  if (
+    state.colorActivo !== 'todos' &&
+    !coloresOrdenados.some((c) => c.toLowerCase() === state.colorActivo.toLowerCase())
+  ) {
+    state.colorActivo = 'todos';
+    els.selectColor.value = 'todos';
+  }
 }
 
 function obtenerNombreCategoria(prod) {
   const encontrada = state.categorias.find((c) => perteneceACategoria(prod, c));
   return encontrada ? encontrada.nombre : (prod.categoria || 'Accesorios');
+}
+
+function actualizarEstadoBotonesFiltro() {
+  if (!els.btnLimpiar) return;
+  const maxActual = Number(els.rangoPrecio?.max) || state.precioMax;
+  const hayFiltroActivo =
+    state.categoriaActiva !== 'todas' ||
+    state.colorActivo !== 'todos' ||
+    state.soloNovedades ||
+    Boolean(state.busqueda.trim()) ||
+    Number(state.precioMax) < maxActual;
+
+  els.btnLimpiar.classList.toggle('has-active-filters', hayFiltroActivo);
+  els.btnLimpiar.textContent = hayFiltroActivo ? 'Limpiar filtros activos' : 'Limpiar filtros';
 }
 
 function filtrarYOrdenar() {
@@ -329,10 +415,12 @@ function filtrarYOrdenar() {
       state.categoriaActiva === 'todas' ||
       (categoriaSeleccionada ? perteneceACategoria(prod, categoriaSeleccionada) : false);
 
-    const pasaPrecio = precio <= state.precioMax;
+    const pasaPrecio = precio <= Number(state.precioMax);
+
+    const coloresProd = obtenerColoresProducto(prod).map((c) => c.toLowerCase());
     const pasaColor =
       state.colorActivo === 'todos' ||
-      (prod.color || '').toString().toLowerCase().trim() === state.colorActivo.toLowerCase().trim();
+      coloresProd.includes(state.colorActivo.toLowerCase().trim());
 
     const pasaBusqueda = !q || nombre.includes(q) || desc.includes(q);
     const pasaNovedad = !state.soloNovedades || esNovedad(prod);
@@ -345,7 +433,7 @@ function filtrarYOrdenar() {
   } else if (state.orden === 'precio-desc') {
     lista.sort((a, b) => (Number(b.precio) || 0) - (Number(a.precio) || 0));
   } else if (state.orden === 'nombre') {
-    lista.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+    lista.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '', 'es'));
   } else {
     lista.sort((a, b) => {
       const ordDiff = (Number(a.orden) || 0) - (Number(b.orden) || 0);
@@ -359,10 +447,24 @@ function filtrarYOrdenar() {
 
 function renderCatalogo() {
   const filtrados = filtrarYOrdenar();
-  els.contadorResultados.textContent = `${filtrados.length} ${filtrados.length === 1 ? 'producto encontrado' : 'productos encontrados'}`;
+  actualizarEstadoBotonesFiltro();
+
+  if (els.contadorResultados) {
+    els.contadorResultados.textContent = `${filtrados.length} ${filtrados.length === 1 ? 'producto encontrado' : 'productos encontrados'}`;
+  }
 
   if (!filtrados.length) {
-    els.grid.innerHTML = `<p class="empty-state">No encontramos accesorios con esos filtros.</p>`;
+    els.grid.innerHTML = `
+      <div class="empty-state">
+        <p>No encontramos accesorios con esos filtros.</p>
+        <button type="button" class="btn-clear-filters" id="btn-empty-reset" style="margin-top:12px;">
+          Restablecer filtros
+        </button>
+      </div>
+    `;
+    document.getElementById('btn-empty-reset')?.addEventListener('click', () => {
+      els.btnLimpiar?.click();
+    });
     return;
   }
 
@@ -464,7 +566,9 @@ els.detalleAgregar?.addEventListener('click', () => {
       id: prod.id,
       nombre: prod.nombre,
       precio: Number(prod.precio) || 0,
+      es_desde: esDesdePrecio(prod),
       imagen: prod.imagen_url || '',
+      moneda: state.moneda,
       cantidad: 1
     });
   }
@@ -494,7 +598,8 @@ els.btnEnviarWhatsapp?.addEventListener('click', () => {
   const lineas = items.map((i) => {
     const cant = Number(i.cantidad) || 1;
     const precio = Number(i.precio) || 0;
-    return `• ${i.nombre} (x${cant}) - ${formatearPrecio(precio * cant)}`;
+    const prefijo = i.es_desde ? 'Desde ' : '';
+    return `• ${i.nombre} (x${cant}) - ${prefijo}${formatearPrecio(precio * cant)}`;
   });
   const total = items.reduce((acc, i) => acc + (Number(i.precio) || 0) * (Number(i.cantidad) || 1), 0);
   const texto = `Hola Camila Accesorios, deseo realizar el siguiente pedido:\n${lineas.join('\n')}\nTotal estimado: ${formatearPrecio(total)}`;
@@ -504,7 +609,9 @@ els.btnEnviarWhatsapp?.addEventListener('click', () => {
 
 els.rangoPrecio?.addEventListener('input', (e) => {
   state.precioMax = Number(e.target.value);
-  els.valorPrecio.textContent = formatearPrecio(state.precioMax);
+  if (els.valorPrecio) {
+    els.valorPrecio.textContent = formatearPrecio(state.precioMax);
+  }
   renderCatalogo();
 });
 
@@ -555,18 +662,20 @@ document.querySelector('.hero__box a[href="#catalogo-seccion"]')?.addEventListen
 });
 
 els.btnLimpiar?.addEventListener('click', () => {
+  const maxReset = Number(els.rangoPrecio?.max) || 100;
+
   state.categoriaActiva = 'todas';
   state.colorActivo = 'todos';
   state.busqueda = '';
   state.orden = 'recientes';
   state.soloNovedades = false;
-  state.precioMax = Number(els.rangoPrecio.max) || 100;
+  state.precioMax = maxReset;
 
-  els.rangoPrecio.value = String(state.precioMax);
-  els.valorPrecio.textContent = formatearPrecio(state.precioMax);
-  els.selectColor.value = 'todos';
-  els.inputBuscar.value = '';
-  els.selectOrden.value = 'recientes';
+  if (els.rangoPrecio) els.rangoPrecio.value = String(maxReset);
+  if (els.valorPrecio) els.valorPrecio.textContent = formatearPrecio(maxReset);
+  if (els.selectColor) els.selectColor.value = 'todos';
+  if (els.inputBuscar) els.inputBuscar.value = '';
+  if (els.selectOrden) els.selectOrden.value = 'recientes';
 
   renderCategorias();
   renderCatalogo();
