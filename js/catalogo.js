@@ -1,5 +1,7 @@
 import { supabase } from './supabase.js';
 
+const CLAVE_BOLSA = 'camila_accesorios_bolsa';
+
 const state = {
   productos: [],
   categorias: [],
@@ -33,12 +35,106 @@ const els = {
   detalleTitulo: document.getElementById('detalle-titulo'),
   detallePrecio: document.getElementById('detalle-precio'),
   detalleDesc: document.getElementById('detalle-descripcion'),
-  detalleAgregar: document.getElementById('detalle-agregar-bolsa')
+  detalleAgregar: document.getElementById('detalle-agregar-bolsa'),
+  btnAbrirBolsa: document.getElementById('btn-abrir-bolsa'),
+  cerrarBolsa: document.getElementById('cerrar-bolsa'),
+  drawerBolsa: document.getElementById('drawer-bolsa'),
+  itemsBolsa: document.getElementById('items-bolsa'),
+  totalBolsa: document.getElementById('total-bolsa'),
+  contadorBolsa: document.getElementById('contador-bolsa'),
+  btnEnviarWhatsapp: document.getElementById('btn-enviar-whatsapp')
 };
 
 function formatearPrecio(monto) {
   const num = Number(monto) || 0;
   return `${state.moneda} ${num.toFixed(2)}`;
+}
+
+function leerBolsa() {
+  try {
+    return JSON.parse(localStorage.getItem(CLAVE_BOLSA) || '[]');
+  } catch (_) {
+    return [];
+  }
+}
+
+function guardarBolsa(items) {
+  localStorage.setItem(CLAVE_BOLSA, JSON.stringify(items));
+  const totalUnidades = items.reduce((acc, item) => acc + (Number(item.cantidad) || 1), 0);
+  if (els.contadorBolsa) {
+    els.contadorBolsa.textContent = String(totalUnidades);
+  }
+  window.dispatchEvent(new CustomEvent('bolsa-actualizada', { detail: items }));
+}
+
+function renderizarBolsa() {
+  const items = leerBolsa();
+  const totalUnidades = items.reduce((acc, item) => acc + (Number(item.cantidad) || 1), 0);
+
+  if (els.contadorBolsa) {
+    els.contadorBolsa.textContent = String(totalUnidades);
+  }
+
+  if (!els.itemsBolsa) return;
+
+  if (!items.length) {
+    els.itemsBolsa.innerHTML = '<p class="empty-state">Tu bolsa está vacía.</p>';
+    if (els.totalBolsa) els.totalBolsa.textContent = formatearPrecio(0);
+    return;
+  }
+
+  let subtotal = 0;
+  els.itemsBolsa.innerHTML = items.map((item, idx) => {
+    const cant = Number(item.cantidad) || 1;
+    const precio = Number(item.precio) || 0;
+    subtotal += cant * precio;
+
+    return `
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;border:1px solid var(--border-light);border-radius:12px;">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+          ${item.imagen ? `<img src="${item.imagen}" alt="${item.nombre}" style="width:46px;height:46px;object-fit:cover;border-radius:8px;" />` : ''}
+          <div style="min-width:0;">
+            <strong style="display:block;font-size:0.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.nombre}</strong>
+            <small style="color:var(--primary);font-weight:700;">${formatearPrecio(precio)} × ${cant}</small>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <button type="button" data-restar-bolsa="${idx}" style="padding:2px 8px;border-radius:8px;border:1px solid var(--border-light);background:#fff;cursor:pointer;">−</button>
+          <button type="button" data-sumar-bolsa="${idx}" style="padding:2px 8px;border-radius:8px;border:1px solid var(--border-light);background:#fff;cursor:pointer;">+</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  if (els.totalBolsa) {
+    els.totalBolsa.textContent = formatearPrecio(subtotal);
+  }
+
+  els.itemsBolsa.querySelectorAll('[data-sumar-bolsa]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const lista = leerBolsa();
+      const i = Number(btn.dataset.sumarBolsa);
+      if (lista[i]) lista[i].cantidad = (Number(lista[i].cantidad) || 1) + 1;
+      guardarBolsa(lista);
+      renderizarBolsa();
+    });
+  });
+
+  els.itemsBolsa.querySelectorAll('[data-restar-bolsa]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const lista = leerBolsa();
+      const i = Number(btn.dataset.restarBolsa);
+      if (lista[i]) {
+        if ((Number(lista[i].cantidad) || 1) > 1) {
+          lista[i].cantidad -= 1;
+        } else {
+          lista.splice(i, 1);
+        }
+      }
+      guardarBolsa(lista);
+      renderizarBolsa();
+    });
+  });
 }
 
 async function cargarConfiguracion() {
@@ -139,10 +235,7 @@ async function cargarDatos() {
     console.error('Error cargando categorías:', errCats);
   }
 
-  // Filtrar categorías activas (si activa es null o undefined, se consideran activas)
   state.categorias = (cats || []).filter((c) => c.activa !== false);
-
-  // Filtrar productos activos
   state.productos = (prods || []).filter((p) => {
     const estado = (p.estado || '').toString().toLowerCase().trim();
     return estado !== 'agotado' && estado !== 'inactivo' && estado !== 'oculto';
@@ -161,6 +254,7 @@ async function cargarDatos() {
   renderCategorias();
   renderColores();
   renderCatalogo();
+  renderizarBolsa();
 }
 
 function renderCategorias() {
@@ -324,15 +418,53 @@ els.modalDetalle?.addEventListener('click', (e) => {
 
 els.detalleAgregar?.addEventListener('click', () => {
   if (!state.productoSeleccionado) return;
-  window.dispatchEvent(new CustomEvent('agregar-a-bolsa', {
-    detail: {
-      id: state.productoSeleccionado.id,
-      nombre: state.productoSeleccionado.nombre,
-      precio: Number(state.productoSeleccionado.precio) || 0,
-      imagen: state.productoSeleccionado.imagen_url || ''
-    }
-  }));
+  const prod = state.productoSeleccionado;
+  const items = leerBolsa();
+  const existente = items.find((i) => String(i.id) === String(prod.id));
+
+  if (existente) {
+    existente.cantidad = (Number(existente.cantidad) || 1) + 1;
+  } else {
+    items.push({
+      id: prod.id,
+      nombre: prod.nombre,
+      precio: Number(prod.precio) || 0,
+      imagen: prod.imagen_url || '',
+      cantidad: 1
+    });
+  }
+
+  guardarBolsa(items);
   els.modalDetalle.hidden = true;
+  renderizarBolsa();
+  if (els.drawerBolsa) els.drawerBolsa.hidden = false;
+});
+
+els.btnAbrirBolsa?.addEventListener('click', () => {
+  renderizarBolsa();
+  if (els.drawerBolsa) els.drawerBolsa.hidden = false;
+});
+
+els.cerrarBolsa?.addEventListener('click', () => {
+  if (els.drawerBolsa) els.drawerBolsa.hidden = true;
+});
+
+els.drawerBolsa?.addEventListener('click', (e) => {
+  if (e.target === els.drawerBolsa) els.drawerBolsa.hidden = true;
+});
+
+els.btnEnviarWhatsapp?.addEventListener('click', () => {
+  const items = leerBolsa();
+  if (!items.length) return;
+  const lineas = items.map((i) => {
+    const cant = Number(i.cantidad) || 1;
+    const precio = Number(i.precio) || 0;
+    return `• ${i.nombre} (x${cant}) - ${formatearPrecio(precio * cant)}`;
+  });
+  const total = items.reduce((acc, i) => acc + (Number(i.precio) || 0) * (Number(i.cantidad) || 1), 0);
+  const texto = `Hola Camila Accesorios, deseo realizar el siguiente pedido:\n${lineas.join('\n')}\nTotal estimado: ${formatearPrecio(total)}`;
+  const numero = state.whatsapp || '51900000000';
+  window.open(`https://wa.me/${numero}?text=${encodeURIComponent(texto)}`, '_blank', 'noopener,noreferrer');
 });
 
 els.rangoPrecio?.addEventListener('input', (e) => {
