@@ -115,6 +115,20 @@ function generarSlug(texto = '') {
     .replace(/^-+|-+$/g, '');
 }
 
+function formatearColor(valor = '') {
+  const limpio = String(valor || '').trim().replace(/\s+/g, ' ');
+  if (!limpio) return null;
+  return limpio
+    .split(/(\s+|\/|-|,)/)
+    .map((parte) => {
+      if (/^[a-záéíóúñü]+$/i.test(parte)) {
+        return parte.charAt(0).toUpperCase() + parte.slice(1).toLowerCase();
+      }
+      return parte;
+    })
+    .join('');
+}
+
 // ==========================================
 // SUBIDA DE IMÁGENES A SUPABASE STORAGE
 // ==========================================
@@ -187,6 +201,7 @@ function renderTablaProductos() {
         </td>
         <td>
           <strong>${escapeHtml(p.nombre)}</strong>
+          ${p.color ? `<br><small>Color: ${escapeHtml(p.color)}</small>` : ''}
           ${p.destacado ? '<br><small>★ Destacado</small>' : ''}
         </td>
         <td>${escapeHtml(catNombre)}</td>
@@ -239,6 +254,8 @@ function resetFormProducto() {
   if (tituloEl) tituloEl.textContent = 'Agregar producto';
   document.getElementById('form-producto')?.reset();
   document.getElementById('prod-id').value = '';
+  const colorInput = document.getElementById('prod-color');
+  if (colorInput) colorInput.value = '';
 }
 
 async function eliminarProducto(id) {
@@ -647,7 +664,7 @@ function registrarEventosFormularios() {
       const categoriaRaw = document.getElementById('prod-categoria').value;
       const esDesde = document.getElementById('prod-es-desde').checked;
       const destacado = document.getElementById('prod-destacado').checked;
-      const colorVal = document.getElementById('prod-color')?.value.trim() || null;
+      const colorVal = formatearColor(document.getElementById('prod-color')?.value || '');
 
       const payload = {
         nombre: document.getElementById('prod-nombre').value.trim(),
