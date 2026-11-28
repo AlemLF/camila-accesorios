@@ -1,49 +1,46 @@
 /* ==========================================
    PANEL DE ADMINISTRACIÓN — CAMILA ACCESORIOS
-   Alineado con la estética de la tienda principal
+   Conserva proporciones exactas + estética rosa/magenta
    ========================================== */
 
 body.admin-body {
   background-color: var(--bg-page);
   color: var(--text-main);
-  padding: 0 0 64px;
+  padding: 0 0 56px;
   min-height: 100vh;
 }
 
-/* Barra superior del panel */
+.admin-body .container {
+  max-width: 1320px;
+}
+
+/* 1. BARRA SUPERIOR (proporción compacta original) */
 .admin-topbar {
   background-color: var(--bg-surface);
   border-bottom: 1px solid var(--border-light);
-  box-shadow: var(--shadow-card);
-  position: sticky;
-  top: 0;
-  z-index: 30;
+  box-shadow: 0 2px 10px rgba(72, 18, 45, 0.04);
 }
 
 .admin-topbar-inner {
-  min-height: 72px;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  flex-wrap: wrap;
-  padding-top: 12px;
-  padding-bottom: 12px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .admin-topbar-inner strong {
   display: block;
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1.55rem;
+  font-size: 1.02rem;
   font-weight: 700;
-  font-style: italic;
-  line-height: 1.1;
-  color: var(--plum-title);
+  color: #1f1b24;
 }
 
 #info-usuario-activo {
   display: block;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
   margin-top: 2px;
 }
@@ -52,32 +49,24 @@ body.admin-body {
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-wrap: wrap;
 }
 
-/* Botones auxiliares del panel */
 .admin-body .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  border-radius: var(--radius-pill);
+  border-radius: 10px;
   font-weight: 600;
-  font-size: 0.85rem;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
-}
-
-.admin-body .btn-sm {
-  padding: 7px 15px;
   font-size: 0.82rem;
+  cursor: pointer;
+  padding: 6px 13px;
+  transition: all 0.18s ease;
 }
 
 .admin-body .btn-outline {
   background-color: var(--primary-soft);
   color: var(--primary);
-  border-color: var(--primary-border);
+  border: 1px solid var(--primary-border);
 }
 
 .admin-body .btn-outline:hover {
@@ -87,8 +76,8 @@ body.admin-body {
 
 .admin-body .btn-danger {
   background-color: #ffffff;
-  color: var(--plum-title);
-  border-color: var(--border-light);
+  color: #3a3540;
+  border: 1px solid var(--border-light);
 }
 
 .admin-body .btn-danger:hover {
@@ -97,36 +86,34 @@ body.admin-body {
   color: var(--primary);
 }
 
-/* Contenedor principal */
+/* 2. CONTENEDOR PRINCIPAL Y PESTAÑAS */
 .admin-main {
-  padding-top: 24px;
+  padding-top: 22px;
 }
 
-/* Navegación por pestañas */
 .admin-tabs {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-pill);
-  padding: 6px;
   margin-bottom: 24px;
-  box-shadow: var(--shadow-card);
+  background: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
 }
 
 .tab-btn {
   appearance: none;
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   border-radius: var(--radius-pill);
-  padding: 8px 16px;
-  font-size: 0.86rem;
+  padding: 7px 16px;
+  font-size: 0.84rem;
   font-weight: 600;
-  color: #3c3742;
+  color: #2d2933;
   cursor: pointer;
-  transition: background-color 0.18s ease, color 0.18s ease;
+  transition: all 0.18s ease;
 }
 
 .tab-btn:hover {
@@ -140,39 +127,54 @@ body.admin-body {
   box-shadow: 0 4px 12px rgba(228, 24, 120, 0.24);
 }
 
-/* Secciones / tarjetas del panel */
-.admin-main > section,
-.admin-main .admin-section,
-.admin-main .admin-card {
+/* 3. DISTRIBUCIÓN DE DOS COLUMNAS (Formulario ~310px | Tabla flexible) */
+.admin-grid,
+.panel-grid,
+.admin-two-col,
+section.tab-panel.active > div:has(> form),
+section.tab-panel:not([hidden]) > div:has(> form) {
+  display: grid;
+  grid-template-columns: 315px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+/* Tarjetas blancas suaves */
+.admin-card,
+.panel-card,
+section.tab-panel form,
+section.tab-panel .table-wrap,
+section.tab-panel > div > div {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-card);
-  padding: 22px 24px;
+  padding: 20px 22px;
   box-shadow: var(--shadow-card);
-  margin-bottom: 22px;
 }
 
-.admin-main h2 {
-  font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 1.7rem;
+.admin-main h2,
+.admin-main h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.18rem;
   font-weight: 700;
-  color: var(--plum-title);
+  color: #1f1b24;
   margin-bottom: 16px;
 }
 
-.admin-main h3 {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-main);
-  margin-bottom: 12px;
+/* 4. FORMULARIO IZQUIERDO (con filas dobles Categoría/Precio y Estado/Orden) */
+.admin-main .form-row,
+.admin-main .grid-2,
+.admin-main form > div:has(> div + div) {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
-/* Formularios dentro de admin */
 .admin-main label {
   display: block;
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: #3a3540;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #2d2933;
   margin-bottom: 5px;
 }
 
@@ -185,32 +187,38 @@ body.admin-body {
 .admin-main select,
 .admin-main textarea {
   width: 100%;
-  padding: 9px 12px;
+  padding: 8px 11px;
   border-radius: 10px;
   border: 1px solid var(--border-light);
-  background-color: #fafafa;
+  background-color: #ffffff;
   color: var(--text-main);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   margin-bottom: 12px;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .admin-main input:focus,
 .admin-main select:focus,
 .admin-main textarea:focus {
   outline: none;
-  background-color: #ffffff;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px var(--primary-soft);
 }
 
-.admin-main input[type="checkbox"],
-.admin-main input[type="radio"] {
+.admin-main input[type="checkbox"] {
   accent-color: var(--primary);
   width: 15px;
   height: 15px;
   margin-right: 6px;
   vertical-align: middle;
+}
+
+.admin-main label:has(input[type="checkbox"]) {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  font-size: 0.82rem;
+  margin-bottom: 8px;
   cursor: pointer;
 }
 
@@ -220,70 +228,65 @@ body.admin-body {
   color: #ffffff;
   border: none;
   border-radius: var(--radius-pill);
-  padding: 10px 22px;
-  font-size: 0.88rem;
+  padding: 9px 18px;
+  font-size: 0.84rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(228, 24, 120, 0.22);
-  transition: background-color 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 4px 14px rgba(228, 24, 120, 0.22);
+  transition: background-color 0.18s ease;
 }
 
 .admin-main button[type="submit"]:hover,
 .admin-main .btn-primary:hover {
   background-color: var(--primary-hover);
-  transform: translateY(-1px);
 }
 
-/* Tablas del panel */
+/* 5. TABLA DERECHA ("Productos guardados") */
 .admin-main table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.88rem;
-  margin-top: 8px;
+  font-size: 0.85rem;
 }
 
 .admin-main th {
   text-align: left;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  padding: 11px 12px;
+  color: #2d2933;
+  padding: 10px 12px;
   border-bottom: 1px solid var(--border-light);
-  background-color: #fcf9fb;
 }
 
 .admin-main td {
   padding: 12px;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid #f4eff3;
   vertical-align: middle;
 }
 
 .admin-main tbody tr:hover {
-  background-color: #fff6fa;
+  background-color: #fff7fb;
 }
 
 .admin-main td img {
-  width: 54px;
-  height: 54px;
+  width: 48px;
+  height: 48px;
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: 10px;
   background-color: var(--bg-card-img);
   border: 1px solid var(--border-light);
 }
 
 .admin-main td button {
-  padding: 6px 12px;
-  border-radius: 9px;
+  padding: 4px 10px;
+  border-radius: 8px;
   border: 1px solid var(--primary-border);
   background-color: var(--primary-soft);
   color: var(--primary);
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-size: 0.76rem;
+  font-weight: 600;
   cursor: pointer;
-  margin-right: 6px;
-  transition: background-color 0.18s ease, color 0.18s ease;
+  margin-right: 4px;
+  transition: all 0.18s ease;
 }
 
 .admin-main td button:hover {
@@ -291,9 +294,13 @@ body.admin-body {
   color: #ffffff;
 }
 
-@media (max-width: 768px) {
-  .admin-tabs {
-    border-radius: 16px;
+@media (max-width: 920px) {
+  .admin-grid,
+  .panel-grid,
+  .admin-two-col,
+  section.tab-panel.active > div:has(> form),
+  section.tab-panel:not([hidden]) > div:has(> form) {
+    grid-template-columns: 1fr;
   }
 
   .admin-main table {
