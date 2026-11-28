@@ -6,30 +6,31 @@
   <title>Camila Accesorios — Panel de gestión</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/admin.css" />
 </head>
-<body>
+<body class="admin-body">
 
-  <!-- ENCABEZADO SUPERIOR -->
+  <!-- 1. BARRA SUPERIOR -->
   <header class="admin-topbar">
-    <div class="admin-topbar__inner">
-      <div class="admin-brand">
-        <h1>Camila Accesorios · Panel de gestión</h1>
-        <p id="info-usuario-activo">Verificando sesión...</p>
+    <div class="container admin-topbar-inner">
+      <div>
+        <strong>Camila Accesorios · Panel de gestión</strong>
+        <span id="info-usuario-activo">Verificando sesión...</span>
       </div>
 
-      <div class="admin-actions">
+      <div class="admin-topbar-actions">
         <a href="index.html" class="btn btn-outline">Ver tienda</a>
         <button type="button" id="btn-logout" class="btn btn-danger">Cerrar sesión</button>
       </div>
     </div>
   </header>
 
-  <!-- CONTENEDOR PRINCIPAL -->
-  <main class="admin-container">
+  <!-- 2. CONTENEDOR PRINCIPAL -->
+  <main class="container admin-main">
 
-    <!-- NAVEGACIÓN POR PESTAÑAS -->
+    <!-- PESTAÑAS -->
     <nav class="admin-tabs" role="tablist" aria-label="Secciones del panel">
       <button type="button" class="tab-btn active" role="tab" aria-selected="true" data-tab="sec-productos">
         Productos
@@ -62,29 +63,27 @@
         <div class="admin-card">
           <h2 id="titulo-form-producto">Agregar producto</h2>
 
-          <form id="form-producto" class="admin-form">
+          <form id="form-producto">
             <input type="hidden" id="prod-id" name="prod-id" />
 
-            <div class="form-group">
-              <label for="prod-nombre">Nombre del producto</label>
-              <input
-                type="text"
-                id="prod-nombre"
-                name="prod-nombre"
-                placeholder="Ej. Lazo Navidad Rojo y Dorado"
-                required
-              />
-            </div>
+            <label for="prod-nombre">Nombre del producto</label>
+            <input
+              type="text"
+              id="prod-nombre"
+              name="prod-nombre"
+              placeholder="Ej. Lazo Navidad Rojo y Dorado"
+              required
+            />
 
             <div class="form-row">
-              <div class="form-group">
+              <div>
                 <label for="prod-categoria">Categoría</label>
                 <select id="prod-categoria" name="prod-categoria">
                   <option value="">Sin categoría</option>
                 </select>
               </div>
 
-              <div class="form-group">
+              <div>
                 <label for="prod-precio">Precio</label>
                 <input
                   type="number"
@@ -99,7 +98,7 @@
             </div>
 
             <div class="form-row">
-              <div class="form-group">
+              <div>
                 <label for="prod-estado">Estado</label>
                 <select id="prod-estado" name="prod-estado">
                   <option value="disponible">Disponible</option>
@@ -107,7 +106,7 @@
                 </select>
               </div>
 
-              <div class="form-group">
+              <div>
                 <label for="prod-orden">Orden</label>
                 <input
                   type="number"
@@ -120,76 +119,66 @@
               </div>
             </div>
 
-            <div class="form-group">
-              <label for="prod-color">Color</label>
-              <input
-                type="text"
-                id="prod-color"
-                name="prod-color"
-                list="lista-colores-sugeridos"
-                placeholder="Ej. Rojo, Dorado, Rosado, Celeste"
-              />
-              <datalist id="lista-colores-sugeridos">
-                <option value="Rojo"></option>
-                <option value="Dorado"></option>
-                <option value="Plateado"></option>
-                <option value="Rosado"></option>
-                <option value="Fucsia"></option>
-                <option value="Celeste"></option>
-                <option value="Azul"></option>
-                <option value="Blanco"></option>
-                <option value="Negro"></option>
-                <option value="Verde"></option>
-                <option value="Morado"></option>
-                <option value="Lila"></option>
-                <option value="Amarillo"></option>
-                <option value="Coral"></option>
-              </datalist>
-            </div>
+            <label for="prod-color">Color</label>
+            <input
+              type="text"
+              id="prod-color"
+              name="prod-color"
+              list="lista-colores-sugeridos"
+              placeholder="Ej. Rojo, Dorado, Rosado, Celeste"
+            />
+            <datalist id="lista-colores-sugeridos">
+              <option value="Rojo"></option>
+              <option value="Dorado"></option>
+              <option value="Plateado"></option>
+              <option value="Rosado"></option>
+              <option value="Fucsia"></option>
+              <option value="Celeste"></option>
+              <option value="Azul"></option>
+              <option value="Blanco"></option>
+              <option value="Negro"></option>
+              <option value="Verde"></option>
+              <option value="Morado"></option>
+              <option value="Lila"></option>
+              <option value="Amarillo"></option>
+              <option value="Coral"></option>
+            </datalist>
 
-            <div class="form-checks">
-              <label class="checkbox-label">
-                <input type="checkbox" id="prod-es-desde" name="prod-es-desde" />
-                <span>Mostrar como "Desde [precio]"</span>
-              </label>
+            <label>
+              <input type="checkbox" id="prod-es-desde" name="prod-es-desde" />
+              Mostrar como "Desde [precio]"
+            </label>
 
-              <label class="checkbox-label">
-                <input type="checkbox" id="prod-destacado" name="prod-destacado" />
-                <span>Destacado / Novedad</span>
-              </label>
-            </div>
+            <label>
+              <input type="checkbox" id="prod-destacado" name="prod-destacado" />
+              Destacado / Novedad
+            </label>
 
-            <div class="form-group">
-              <label for="prod-descripcion">Descripción</label>
-              <textarea
-                id="prod-descripcion"
-                name="prod-descripcion"
-                rows="3"
-                placeholder="Detalles del accesorio, materiales o medidas..."
-              ></textarea>
-            </div>
+            <label for="prod-descripcion">Descripción</label>
+            <textarea
+              id="prod-descripcion"
+              name="prod-descripcion"
+              rows="3"
+              placeholder="Detalles del accesorio, materiales o medidas..."
+            ></textarea>
 
-            <div class="form-group">
-              <label for="prod-archivo">Subir imagen (JPG, PNG, WEBP, GIF · máx. 5 MB)</label>
-              <input
-                type="file"
-                id="prod-archivo"
-                name="prod-archivo"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-              />
-            </div>
+            <label for="prod-archivo">Subir imagen (JPG, PNG, WEBP, GIF · máx. 5 MB)</label>
+            <input
+              type="file"
+              id="prod-archivo"
+              name="prod-archivo"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+            />
 
-            <div class="form-group">
-              <label for="prod-imagen-url">O URL directa de imagen</label>
-              <input
-                type="url"
-                id="prod-imagen-url"
-                name="prod-imagen-url"
-                placeholder="https://..."
-              />
-            </div>
+            <label for="prod-imagen-url">O URL directa de imagen</label>
+            <input
+              type="url"
+              id="prod-imagen-url"
+              name="prod-imagen-url"
+              placeholder="https://..."
+            />
 
-            <div class="form-actions">
+            <div class="admin-topbar-actions">
               <button type="submit" class="btn btn-primary">Guardar producto</button>
               <button type="button" id="btn-cancelar-prod" class="btn btn-outline">Cancelar</button>
             </div>
@@ -198,23 +187,21 @@
 
         <div class="admin-card">
           <h2>Listado de productos</h2>
-          <div class="table-responsive">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>Imagen</th>
-                  <th>Producto</th>
-                  <th>Categoría</th>
-                  <th>Precio</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-productos">
-                <tr><td colspan="6">Cargando productos...</td></tr>
-              </tbody>
-            </table>
-          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Imagen</th>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-productos">
+              <tr><td colspan="6">Cargando productos...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -227,38 +214,34 @@
         <div class="admin-card">
           <h2>Agregar / editar categoría</h2>
 
-          <form id="form-categoria" class="admin-form">
+          <form id="form-categoria">
             <input type="hidden" id="cat-id" name="cat-id" />
 
-            <div class="form-group">
-              <label for="cat-nombre">Nombre de la categoría</label>
-              <input
-                type="text"
-                id="cat-nombre"
-                name="cat-nombre"
-                placeholder="Ej. Escolares"
-                required
-              />
-            </div>
+            <label for="cat-nombre">Nombre de la categoría</label>
+            <input
+              type="text"
+              id="cat-nombre"
+              name="cat-nombre"
+              placeholder="Ej. Escolares"
+              required
+            />
 
-            <div class="form-group">
-              <label for="cat-slug">Slug</label>
-              <input
-                type="text"
-                id="cat-slug"
-                name="cat-slug"
-                placeholder="escolares"
-                required
-              />
-            </div>
+            <label for="cat-slug">Slug</label>
+            <input
+              type="text"
+              id="cat-slug"
+              name="cat-slug"
+              placeholder="escolares"
+              required
+            />
 
             <div class="form-row">
-              <div class="form-group">
+              <div>
                 <label for="cat-orden">Orden</label>
                 <input type="number" id="cat-orden" name="cat-orden" min="0" value="0" />
               </div>
 
-              <div class="form-group">
+              <div>
                 <label for="cat-activa">Estado</label>
                 <select id="cat-activa" name="cat-activa">
                   <option value="true">Activa</option>
@@ -267,7 +250,7 @@
               </div>
             </div>
 
-            <div class="form-actions">
+            <div class="admin-topbar-actions">
               <button type="submit" class="btn btn-primary">Guardar categoría</button>
               <button type="button" id="btn-cancelar-cat" class="btn btn-outline">Cancelar</button>
             </div>
@@ -276,22 +259,20 @@
 
         <div class="admin-card">
           <h2>Categorías registradas</h2>
-          <div class="table-responsive">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>Nombre</th>
-                  <th>Slug</th>
-                  <th>Orden</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-categorias">
-                <tr><td colspan="5">Cargando categorías...</td></tr>
-              </tbody>
-            </table>
-          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Slug</th>
+                <th>Orden</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-categorias">
+              <tr><td colspan="5">Cargando categorías...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -304,38 +285,34 @@
         <div class="admin-card">
           <h2>Agregar / editar pregunta frecuente</h2>
 
-          <form id="form-faq" class="admin-form">
+          <form id="form-faq">
             <input type="hidden" id="faq-id" name="faq-id" />
 
-            <div class="form-group">
-              <label for="faq-pregunta">Pregunta</label>
-              <input
-                type="text"
-                id="faq-pregunta"
-                name="faq-pregunta"
-                placeholder="¿Hacen envíos a todo el Perú?"
-                required
-              />
-            </div>
+            <label for="faq-pregunta">Pregunta</label>
+            <input
+              type="text"
+              id="faq-pregunta"
+              name="faq-pregunta"
+              placeholder="¿Hacen envíos a todo el Perú?"
+              required
+            />
 
-            <div class="form-group">
-              <label for="faq-respuesta">Respuesta</label>
-              <textarea
-                id="faq-respuesta"
-                name="faq-respuesta"
-                rows="4"
-                placeholder="Sí, realizamos envíos a nivel nacional..."
-                required
-              ></textarea>
-            </div>
+            <label for="faq-respuesta">Respuesta</label>
+            <textarea
+              id="faq-respuesta"
+              name="faq-respuesta"
+              rows="4"
+              placeholder="Sí, realizamos envíos a nivel nacional..."
+              required
+            ></textarea>
 
             <div class="form-row">
-              <div class="form-group">
+              <div>
                 <label for="faq-orden">Orden</label>
                 <input type="number" id="faq-orden" name="faq-orden" min="0" value="0" />
               </div>
 
-              <div class="form-group">
+              <div>
                 <label for="faq-activa">Estado</label>
                 <select id="faq-activa" name="faq-activa">
                   <option value="true">Activa</option>
@@ -344,7 +321,7 @@
               </div>
             </div>
 
-            <div class="form-actions">
+            <div class="admin-topbar-actions">
               <button type="submit" class="btn btn-primary">Guardar pregunta</button>
               <button type="button" id="btn-cancelar-faq" class="btn btn-outline">Cancelar</button>
             </div>
@@ -353,21 +330,19 @@
 
         <div class="admin-card">
           <h2>Preguntas registradas</h2>
-          <div class="table-responsive">
-            <table class="admin-table">
-              <thead>
-                <tr>
-                  <th>Pregunta y respuesta</th>
-                  <th>Orden</th>
-                  <th>Estado</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="tbody-faq">
-                <tr><td colspan="4">Cargando preguntas...</td></tr>
-              </tbody>
-            </table>
-          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Pregunta y respuesta</th>
+                <th>Orden</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-faq">
+              <tr><td colspan="4">Cargando preguntas...</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -377,35 +352,30 @@
     <!-- ========================================== -->
     <section id="sec-resenas" class="tab-panel" role="tabpanel" hidden>
       <div class="admin-card">
-        <div class="card-header-flex">
-          <h2>Reseñas y comentarios de clientas</h2>
-          <div class="form-group form-group--inline">
-            <label for="filtro-estado-resenas">Filtrar:</label>
-            <select id="filtro-estado-resenas" name="filtro-estado-resenas">
-              <option value="todos">Todos</option>
-              <option value="pendiente">Pendientes</option>
-              <option value="aprobado">Aprobados</option>
-              <option value="rechazado">Rechazados</option>
-            </select>
-          </div>
-        </div>
+        <h2>Reseñas y comentarios de clientas</h2>
 
-        <div class="table-responsive">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Clienta</th>
-                <th>Comentario</th>
-                <th>Calificación</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-resenas">
-              <tr><td colspan="5">Cargando reseñas...</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <label for="filtro-estado-resenas">Filtrar por estado</label>
+        <select id="filtro-estado-resenas" name="filtro-estado-resenas">
+          <option value="todos">Todos</option>
+          <option value="pendiente">Pendientes</option>
+          <option value="aprobado">Aprobados</option>
+          <option value="rechazado">Rechazados</option>
+        </select>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Clienta</th>
+              <th>Comentario</th>
+              <th>Calificación</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-resenas">
+            <tr><td colspan="5">Cargando reseñas...</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
@@ -417,41 +387,35 @@
         <div class="admin-card">
           <h2>Agregar / editar captura</h2>
 
-          <form id="form-captura" class="admin-form">
+          <form id="form-captura">
             <input type="hidden" id="cap-id" name="cap-id" />
 
-            <div class="form-group">
-              <label for="cap-archivo">Subir imagen</label>
-              <input
-                type="file"
-                id="cap-archivo"
-                name="cap-archivo"
-                accept="image/jpeg,image/png,image/webp,image/gif"
-              />
-            </div>
+            <label for="cap-archivo">Subir imagen</label>
+            <input
+              type="file"
+              id="cap-archivo"
+              name="cap-archivo"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+            />
 
-            <div class="form-group">
-              <label for="cap-url">O URL de imagen</label>
-              <input type="url" id="cap-url" name="cap-url" placeholder="https://..." />
-            </div>
+            <label for="cap-url">O URL de imagen</label>
+            <input type="url" id="cap-url" name="cap-url" placeholder="https://..." />
 
-            <div class="form-group">
-              <label for="cap-descripcion">Descripción</label>
-              <input
-                type="text"
-                id="cap-descripcion"
-                name="cap-descripcion"
-                placeholder="Ej. Pedido entregado en Piura"
-              />
-            </div>
+            <label for="cap-descripcion">Descripción</label>
+            <input
+              type="text"
+              id="cap-descripcion"
+              name="cap-descripcion"
+              placeholder="Ej. Pedido entregado en Piura"
+            />
 
             <div class="form-row">
-              <div class="form-group">
+              <div>
                 <label for="cap-orden">Orden</label>
                 <input type="number" id="cap-orden" name="cap-orden" min="0" value="0" />
               </div>
 
-              <div class="form-group">
+              <div>
                 <label for="cap-activa">Estado</label>
                 <select id="cap-activa" name="cap-activa">
                   <option value="true">Activa</option>
@@ -460,7 +424,7 @@
               </div>
             </div>
 
-            <div class="form-actions">
+            <div class="admin-topbar-actions">
               <button type="submit" class="btn btn-primary">Guardar captura</button>
               <button type="button" id="btn-cancelar-cap" class="btn btn-outline">Cancelar</button>
             </div>
@@ -469,8 +433,8 @@
 
         <div class="admin-card">
           <h2>Capturas registradas</h2>
-          <div id="grid-admin-capturas" class="capturas-grid">
-            <p class="texto-suave">Cargando capturas...</p>
+          <div id="grid-admin-capturas">
+            <p>Cargando capturas...</p>
           </div>
         </div>
       </div>
@@ -483,61 +447,55 @@
       <div class="admin-card">
         <h2>Configuración general de la tienda</h2>
 
-        <form id="form-config" class="admin-form">
+        <form id="form-config">
           <div class="form-row">
-            <div class="form-group">
+            <div>
               <label for="cfg-marca">Nombre de marca</label>
               <input type="text" id="cfg-marca" name="cfg-marca" required />
             </div>
 
-            <div class="form-group">
+            <div>
               <label for="cfg-lema">Lema / subtítulo</label>
               <input type="text" id="cfg-lema" name="cfg-lema" />
             </div>
           </div>
 
           <div class="form-row">
-            <div class="form-group">
+            <div>
               <label for="cfg-wa">Número de WhatsApp (con código de país)</label>
               <input type="text" id="cfg-wa" name="cfg-wa" placeholder="51900000000" required />
             </div>
 
-            <div class="form-group">
+            <div>
               <label for="cfg-moneda">Símbolo de moneda</label>
               <input type="text" id="cfg-moneda" name="cfg-moneda" value="S/" required />
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="cfg-mensaje-wa">Mensaje base para WhatsApp</label>
-            <textarea
-              id="cfg-mensaje-wa"
-              name="cfg-mensaje-wa"
-              rows="3"
-              placeholder="Hola Camila Accesorios, deseo realizar el siguiente pedido:"
-            ></textarea>
-          </div>
+          <label for="cfg-mensaje-wa">Mensaje base para WhatsApp</label>
+          <textarea
+            id="cfg-mensaje-wa"
+            name="cfg-mensaje-wa"
+            rows="3"
+            placeholder="Hola Camila Accesorios, deseo realizar el siguiente pedido:"
+          ></textarea>
 
           <div class="form-row">
-            <div class="form-group">
+            <div>
               <label for="cfg-fb">URL Facebook</label>
               <input type="url" id="cfg-fb" name="cfg-fb" placeholder="https://facebook.com/..." />
             </div>
 
-            <div class="form-group">
+            <div>
               <label for="cfg-ig">URL Instagram</label>
               <input type="url" id="cfg-ig" name="cfg-ig" placeholder="https://instagram.com/..." />
             </div>
-
-            <div class="form-group">
-              <label for="cfg-tt">URL TikTok</label>
-              <input type="url" id="cfg-tt" name="cfg-tt" placeholder="https://tiktok.com/..." />
-            </div>
           </div>
 
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Guardar configuración</button>
-          </div>
+          <label for="cfg-tt">URL TikTok</label>
+          <input type="url" id="cfg-tt" name="cfg-tt" placeholder="https://tiktok.com/..." />
+
+          <button type="submit" class="btn btn-primary">Guardar configuración</button>
         </form>
       </div>
     </section>
@@ -548,22 +506,20 @@
     <section id="sec-usuarios" class="tab-panel" role="tabpanel" hidden>
       <div class="admin-card">
         <h2>Usuarios y permisos</h2>
-        <div class="table-responsive">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Correo</th>
-                <th>Rol</th>
-                <th>Estado</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody id="tbody-usuarios">
-              <tr><td colspan="5">Cargando usuarios...</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-usuarios">
+            <tr><td colspan="5">Cargando usuarios...</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
