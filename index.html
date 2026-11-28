@@ -3,300 +3,330 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Camila Accesorios | Catálogo y Pedidos por WhatsApp</title>
+  <title>Camila Accesorios — Accesorios y Lazos Artesanales</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <!-- Barra superior -->
-  <div class="top-banner">
-    Envíos y coordinaciones personalizadas · Atención directa por WhatsApp
+
+  <!-- 1. BARRA SUPERIOR INFORMATIVA -->
+  <div class="top-bar">
+    <div class="container top-bar__inner">
+      <div class="top-bar__item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3" />
+          <rect x="9" y="11" width="14" height="10" rx="2" />
+          <circle cx="12" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+        </svg>
+        <span id="topbar-envio">Envíos a todo el Perú</span>
+      </div>
+
+      <div class="top-bar__item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 3l1.9 5.8L20 10.7l-5.1 3.7L16.8 20 12 16.6 7.2 20l1.9-5.6L4 10.7l6.1-1.9L12 3z" />
+        </svg>
+        <span id="topbar-calidad">Hechos a mano</span>
+      </div>
+
+      <div class="top-bar__item">
+        <a id="topbar-whatsapp-link" href="#" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          <span id="topbar-whatsapp-text">Consultas por WhatsApp</span>
+        </a>
+      </div>
+    </div>
   </div>
 
-  <!-- Encabezado y navegación -->
-  <header class="site-header">
-    <div class="container header-inner">
+  <!-- 2. ENCABEZADO PRINCIPAL -->
+  <header class="site-header" id="inicio">
+    <div class="container header__inner">
       <a href="#inicio" class="brand">
-        <span class="brand-badge">CA</span>
-        <div>
-          <strong data-marca-nombre>Camila Accesorios</strong>
-          <small data-marca-lema>Accesorios y detalles seleccionados</small>
-        </div>
+        <span class="brand__icon" aria-hidden="true">
+          <svg viewBox="0 0 36 24" fill="currentColor">
+            <path d="M14.5 12L4.2 5.2C2.8 4.3 1 5.3 1 7v10c0 1.7 1.8 2.7 3.2 1.8L14.5 12z" />
+            <path d="M21.5 12l10.3-6.8C33.2 4.3 35 5.3 35 7v10c0 1.7-1.8 2.7-3.2 1.8L21.5 12z" />
+            <rect x="14" y="8" width="8" height="8" rx="3" />
+          </svg>
+        </span>
+        <span class="brand__text">
+          <span class="brand__name" id="brand-name">Camila Accesorios</span>
+          <span class="brand__tagline" id="brand-tagline">DETALLES CON ESTILO Y AMOR</span>
+        </span>
       </a>
 
-      <nav class="main-nav" aria-label="Navegación principal">
-        <a href="#inicio">Inicio</a>
-        <a href="#catalogo">Catálogo</a>
-        <a href="#clientas">Clientas felices</a>
-        <a href="#faq">Preguntas frecuentes</a>
-        <a href="#contacto">Contacto</a>
-        <a href="login.html" class="nav-admin">Acceso</a>
+      <nav class="nav-menu" aria-label="Navegación principal">
+        <a href="#inicio" class="nav-link is-active">Inicio</a>
+        <a href="#catalogo-seccion" class="nav-link">Catálogo</a>
+        <a href="#catalogo-seccion" id="nav-novedades" class="nav-link">Novedades</a>
+        <a href="#contacto-seccion" class="nav-link">Contacto</a>
       </nav>
 
-      <div class="header-actions">
-        <button type="button" id="btn-abrir-bolsa" class="btn-bolsa">
-          Bolsa (<span data-contador-bolsa>0</span>)
+      <div class="header__actions">
+        <a href="login.html" class="btn-ghost-sm">Acceso</a>
+        <button type="button" class="btn-bag" id="btn-abrir-bolsa" aria-label="Abrir bolsa de compras">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <path d="M16 10a4 4 0 0 1-8 0" />
+          </svg>
+          <span>Bolsa</span>
+          <span class="bag-count" id="contador-bolsa">0</span>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Hero -->
-  <section id="inicio" class="hero">
-    <div class="container hero-content">
-      <span class="pill">Tienda de accesorios</span>
-      <h1 data-marca-nombre>Camila Accesorios</h1>
-      <p data-marca-lema>
-        Accesorios y detalles seleccionados con atención personalizada por WhatsApp.
-      </p>
-      <div class="hero-buttons">
-        <a href="#catalogo" class="btn btn-primary">Ver catálogo</a>
-        <a href="#contacto" class="btn btn-outline">Consultar por WhatsApp</a>
+  <!-- 3. PORTADA / HERO -->
+  <section class="hero">
+    <div class="hero__media">
+      <img
+        id="hero-imagen"
+        src="https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=1600&q=85"
+        alt="Accesorios y lazos artesanales Camila Accesorios"
+      />
+      <div class="hero__overlay"></div>
+    </div>
+
+    <div class="container hero__content">
+      <div class="hero__box">
+        <h1 class="hero__title" id="hero-titulo">Accesorios<br />artesanales</h1>
+        <p class="hero__subtitle" id="hero-subtitulo">
+          Diseños únicos, coloridos y llenos de estilo para cada ocasión.
+        </p>
+        <a href="#catalogo-seccion" class="btn-pill">
+          <span>Explorar catálogo</span>
+          <span aria-hidden="true">→</span>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- Catálogo -->
-  <main id="catalogo" class="section">
-    <div class="container">
-      <div class="section-header">
-        <h2>Catálogo de productos</h2>
-        <p>Elige tus modelos favoritos, agrégalos a tu bolsa y envíanos tu pedido por WhatsApp.</p>
+  <!-- 4. FRANJA DE BENEFICIOS -->
+  <section class="benefits-strip">
+    <div class="container benefits-grid">
+      <div class="benefit-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10 12L4 7.5c-.8-.6-2 0-2 1v7c0 1 1.2 1.6 2 1l6-4.5z" />
+          <path d="M14 12l6-4.5c.8-.6 2 0 2 1v7c0 1-1.2 1.6-2 1L14 12z" />
+          <rect x="10" y="9" width="4" height="6" rx="1.5" />
+        </svg>
+        <span>Hechos a mano</span>
       </div>
 
-      <!-- Barra de búsqueda y filtro de disponibilidad -->
-      <div class="toolbar-catalogo">
-        <input
-          type="search"
-          id="buscar-producto"
-          placeholder="Buscar accesorio por nombre o detalle..."
-          aria-label="Buscar producto"
-        />
-        <select id="filtro-disponibilidad" aria-label="Filtrar por disponibilidad">
-          <option value="todos">Todos los estados</option>
-          <option value="disponible">Solo disponibles</option>
-          <option value="agotado">Agotados</option>
-        </select>
+      <div class="benefit-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 3l1.9 5.8L20 10.7l-5.1 3.7L16.8 20 12 16.6 7.2 20l1.9-5.6L4 10.7l6.1-1.9L12 3z" />
+        </svg>
+        <span>Materiales de calidad</span>
       </div>
 
-      <!-- Categorías dinámicas -->
-      <div id="filtro-categorias" class="categorias-pills">
-        <button data-cat="todas" class="active">Todos</button>
+      <div class="benefit-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+        </svg>
+        <span>Diseños exclusivos</span>
       </div>
 
-      <!-- Grilla de productos -->
-      <div id="grid-productos" class="grid-productos">
-        <p class="estado-carga">Cargando catálogo...</p>
+      <div class="benefit-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 12 20 22 4 22 4 12" />
+          <rect x="2" y="7" width="20" height="5" />
+          <line x1="12" y1="22" x2="12" y2="7" />
+          <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
+          <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
+        </svg>
+        <span>Ideales para regalo</span>
       </div>
+    </div>
+  </section>
+
+  <!-- 5. CATÁLOGO CON BARRA LATERAL Y CUADRÍCULA -->
+  <main class="catalog-section" id="catalogo-seccion">
+    <div class="container catalog-layout">
+
+      <!-- BARRA LATERAL IZQUIERDA -->
+      <aside class="sidebar">
+        <!-- Bloque Categorías -->
+        <div class="sidebar-card">
+          <div class="sidebar-card__header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10 12L4 7.5c-.8-.6-2 0-2 1v7c0 1 1.2 1.6 2 1l6-4.5z" />
+              <path d="M14 12l6-4.5c.8-.6 2 0 2 1v7c0 1-1.2 1.6-2 1L14 12z" />
+              <rect x="10" y="9" width="4" height="6" rx="1.5" />
+            </svg>
+            <h2>Categorías</h2>
+          </div>
+
+          <ul class="category-list" id="lista-categorias">
+            <li>
+              <button type="button" class="category-btn is-active" data-categoria="todas">
+                <span>Todos los productos</span>
+                <span class="category-count" id="count-todas">0</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Bloque Filtros -->
+        <div class="sidebar-card">
+          <div class="sidebar-card__header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="4" y1="21" x2="4" y2="14" />
+              <line x1="4" y1="10" x2="4" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12" y2="3" />
+              <line x1="20" y1="21" x2="20" y2="16" />
+              <line x1="20" y1="12" x2="20" y2="3" />
+              <line x1="1" y1="14" x2="7" y2="14" />
+              <line x1="9" y1="8" x2="15" y2="8" />
+              <line x1="17" y1="16" x2="23" y2="16" />
+            </svg>
+            <h2>Filtros</h2>
+          </div>
+
+          <div class="sidebar-card__body">
+            <div class="filter-group">
+              <div class="filter-label-row">
+                <label for="filtro-precio-max">Precio máximo</label>
+                <span class="filter-price-value" id="valor-precio-max">S/ 100.00</span>
+              </div>
+              <input
+                type="range"
+                id="filtro-precio-max"
+                class="range-slider"
+                min="5"
+                max="100"
+                step="1"
+                value="100"
+              />
+            </div>
+
+            <div class="filter-group">
+              <label for="filtro-color">Color</label>
+              <select id="filtro-color" class="select-control">
+                <option value="todos">Todos los colores</option>
+              </select>
+            </div>
+
+            <button type="button" id="btn-limpiar-filtros" class="btn-clear-filters">
+              Limpiar filtros
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- ZONA PRINCIPAL DEL CATÁLOGO -->
+      <div class="catalog-main">
+        <div class="catalog-header">
+          <div class="catalog-header__titles">
+            <span class="catalog-eyebrow">UN DETALLE PARA CADA MOMENTO</span>
+            <h2 class="catalog-title">
+              Catálogo de accesorios <span class="catalog-sparkle" aria-hidden="true">✳</span>
+            </h2>
+            <p class="catalog-count" id="contador-resultados">Cargando productos...</p>
+          </div>
+
+          <div class="catalog-controls">
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input
+                type="search"
+                id="buscar-producto"
+                placeholder="Buscar accesorios..."
+                aria-label="Buscar accesorios"
+              />
+            </div>
+
+            <div class="sort-box">
+              <label for="ordenar-productos">Ordenar:</label>
+              <select id="ordenar-productos" class="select-control select-control--compact">
+                <option value="recientes">Más recientes</option>
+                <option value="precio-asc">Precio: menor a mayor</option>
+                <option value="precio-desc">Precio: mayor a menor</option>
+                <option value="nombre">Nombre: A - Z</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- CUADRÍCULA DE PRODUCTOS -->
+        <div class="products-grid" id="grid-productos">
+          <p class="empty-state">Cargando catálogo...</p>
+        </div>
+      </div>
+
     </div>
   </main>
 
-  <!-- Clientas felices y formulario de reseña -->
-  <section id="clientas" class="section section-alt">
-    <div class="container">
-      <div class="section-header">
-        <h2>Clientas felices</h2>
-        <p>Opiniones reales revisadas antes de publicarse.</p>
-      </div>
-
-      <div id="lista-resenas" class="grid-resenas"></div>
-
-      <!-- Capturas de WhatsApp -->
-      <div class="sub-bloque">
-        <h3>Mensajes compartidos</h3>
-        <div id="galeria-capturas" class="grid-capturas"></div>
-      </div>
-
-      <!-- Dejar comentario -->
-      <div class="card-form-resena">
-        <h3>Deja tu opinión</h3>
-        <p class="texto-suave">No pedimos teléfono ni dirección. Tu comentario será revisado antes de mostrarse.</p>
-        <form id="form-resena" class="form-grid">
-          <div>
-            <label for="autor">Tu nombre o iniciales</label>
-            <input type="text" id="autor" name="autor" required maxlength="60" placeholder="Ej. M. R. o María" />
-          </div>
-          <div>
-            <label for="calificacion">Calificación</label>
-            <select id="calificacion" name="calificacion">
-              <option value="5">★★★★★ (5 estrellas)</option>
-              <option value="4">★★★★☆ (4 estrellas)</option>
-              <option value="3">★★★☆☆ (3 estrellas)</option>
-              <option value="2">★★☆☆☆ (2 estrellas)</option>
-              <option value="1">★☆☆☆☆ (1 estrella)</option>
-            </select>
-          </div>
-          <div class="full">
-            <label for="comentario">Tu comentario</label>
-            <textarea id="comentario" name="comentario" rows="3" required maxlength="400" placeholder="Cuéntanos qué te pareció tu pedido..."></textarea>
-          </div>
-          <div class="full">
-            <button type="submit" class="btn btn-primary">Enviar comentario</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </section>
-
-  <!-- Preguntas frecuentes -->
-  <section id="faq" class="section">
-    <div class="container">
-      <div class="section-header">
-        <h2>Preguntas frecuentes</h2>
-        <p>Resolvemos tus dudas antes de realizar tu pedido.</p>
-      </div>
-      <div id="lista-faq" class="acordeon-faq"></div>
-    </div>
-  </section>
-
-  <!-- Contacto y pie de página -->
-  <footer id="contacto" class="site-footer">
-    <div class="container footer-grid">
+  <!-- PIE DE PÁGINA / CONTACTO -->
+  <footer class="site-footer" id="contacto-seccion">
+    <div class="container footer__inner">
       <div>
-        <h3 data-marca-nombre>Camila Accesorios</h3>
-        <p data-marca-lema>Accesorios y detalles seleccionados con atención por WhatsApp.</p>
+        <strong id="footer-marca">Camila Accesorios</strong>
+        <p id="footer-descripcion">Accesorios hechos a mano con dedicación. Pedidos y consultas directas por WhatsApp.</p>
       </div>
-      <div>
-        <h4>Enlaces</h4>
-        <ul>
-          <li><a href="#catalogo">Catálogo</a></li>
-          <li><a href="#clientas">Clientas felices</a></li>
-          <li><a href="#faq">Preguntas frecuentes</a></li>
-          <li><a href="login.html">Panel de administración</a></li>
-        </ul>
+      <div class="footer__links">
+        <a id="footer-whatsapp" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a id="footer-instagram" href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a id="footer-facebook" href="#" target="_blank" rel="noopener noreferrer">Facebook</a>
       </div>
-      <div>
-        <h4>Redes y contacto</h4>
-        <div class="redes-links">
-          <a id="link-wa-footer" href="#" target="_blank" rel="noopener">WhatsApp</a>
-          <a id="link-fb-footer" href="#" target="_blank" rel="noopener">Facebook</a>
-          <a id="link-ig-footer" href="#" target="_blank" rel="noopener">Instagram</a>
-          <a id="link-tt-footer" href="#" target="_blank" rel="noopener">TikTok</a>
-        </div>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      © 2026 <span data-marca-nombre>Camila Accesorios</span>. Todos los derechos reservados.
     </div>
   </footer>
 
-  <!-- Cajón lateral: Bolsa de pedido -->
-  <aside id="drawer-bolsa" class="drawer-bolsa" aria-hidden="true">
-    <div class="drawer-header">
-      <h3>Bolsa de pedido</h3>
-      <button type="button" id="btn-cerrar-bolsa" aria-label="Cerrar bolsa">✕</button>
-    </div>
-    <div id="contenido-bolsa" class="drawer-body">
-      <p class="texto-suave">Tu bolsa está vacía.</p>
-    </div>
-    <div class="drawer-footer">
-      <div class="bolsa-total">
-        <span>Total estimado:</span>
-        <strong id="total-bolsa">S/ 0.00</strong>
-      </div>
-      <a id="btn-enviar-wa" href="#" target="_blank" rel="noopener" class="btn btn-whatsapp full-width">
-        Enviar pedido por WhatsApp
-      </a>
-    </div>
-  </aside>
-  <div id="backdrop-bolsa" class="backdrop"></div>
-
-  <script type="module" src="./js/catalogo.js"></script>
-  <script type="module">
-    import { obtenerBolsa, guardarBolsa, generarLinkWhatsApp, actualizarContadorUI } from './js/bolsa.js';
-    import { supabase } from './js/supabase.js';
-
-    const drawer = document.getElementById('drawer-bolsa');
-    const backdrop = document.getElementById('backdrop-bolsa');
-    const contenido = document.getElementById('contenido-bolsa');
-    const totalEl = document.getElementById('total-bolsa');
-    const btnWa = document.getElementById('btn-enviar-wa');
-
-    let config = {
-      whatsapp_numero: '51900000000',
-      mensaje_base_wa: 'Hola Camila Accesorios! Quisiera realizar el siguiente pedido:',
-      moneda_simbolo: 'S/'
-    };
-
-    supabase.from('configuracion_sitio').select('*').eq('id', 1).single().then(({ data }) => {
-      if (data) {
-        config = { ...config, ...data };
-        const cleanWa = String(config.whatsapp_numero || '').replace(/\D/g, '');
-        document.getElementById('link-wa-footer').href = `https://wa.me/${cleanWa}`;
-        if (config.url_facebook) document.getElementById('link-fb-footer').href = config.url_facebook;
-        if (config.url_instagram) document.getElementById('link-ig-footer').href = config.url_instagram;
-        if (config.url_tiktok) document.getElementById('link-tt-footer').href = config.url_tiktok;
-      }
-    });
-
-    function abrirBolsa() {
-      renderBolsa();
-      drawer.classList.add('open');
-      backdrop.classList.add('open');
-    }
-
-    function cerrarBolsa() {
-      drawer.classList.remove('open');
-      backdrop.classList.remove('open');
-    }
-
-    function renderBolsa() {
-      const items = obtenerBolsa();
-      if (!items.length) {
-        contenido.innerHTML = '<p class="texto-suave">Tu bolsa está vacía.</p>';
-        totalEl.textContent = `${config.moneda_simbolo} 0.00`;
-        btnWa.style.pointerEvents = 'none';
-        btnWa.style.opacity = '0.5';
-        return;
-      }
-
-      btnWa.style.pointerEvents = 'auto';
-      btnWa.style.opacity = '1';
-
-      let total = 0;
-      contenido.innerHTML = items.map((item, idx) => {
-        total += item.precio * item.cantidad;
-        return `
-          <div class="bolsa-item">
-            <div>
-              <strong>${item.nombre}</strong>
-              <small>${item.es_desde ? 'Desde ' : ''}${item.moneda} ${item.precio.toFixed(2)}</small>
-            </div>
-            <div class="bolsa-controles">
-              <button type="button" data-dec="${idx}">-</button>
-              <span>${item.cantidad}</span>
-              <button type="button" data-inc="${idx}">+</button>
-              <button type="button" data-del="${idx}" class="btn-del">🗑</button>
-            </div>
+  <!-- MODAL DE DETALLE DEL PRODUCTO -->
+  <div class="modal-backdrop" id="modal-detalle" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="detalle-titulo">
+      <button type="button" class="modal-close" id="cerrar-detalle" aria-label="Cerrar detalle">✕</button>
+      <div class="modal-detalle__grid">
+        <div class="modal-detalle__img">
+          <img id="detalle-imagen" src="" alt="" />
+        </div>
+        <div class="modal-detalle__info">
+          <span class="modal-detalle__cat" id="detalle-categoria"></span>
+          <h3 id="detalle-titulo"></h3>
+          <p class="modal-detalle__precio" id="detalle-precio"></p>
+          <p class="modal-detalle__desc" id="detalle-descripcion"></p>
+          <div class="modal-detalle__actions">
+            <button type="button" class="btn-pill" id="detalle-agregar-bolsa">
+              Agregar a la bolsa
+            </button>
           </div>
-        `;
-      }).join('');
+        </div>
+      </div>
+    </div>
+  </div>
 
-      totalEl.textContent = `${config.moneda_simbolo} ${total.toFixed(2)}`;
-      btnWa.href = generarLinkWhatsApp(config.whatsapp_numero, config.mensaje_base_wa, items);
+  <!-- PANEL LATERAL DE BOLSA -->
+  <div class="drawer-backdrop" id="drawer-bolsa" hidden>
+    <aside class="drawer-panel" aria-label="Bolsa de compras">
+      <div class="drawer-header">
+        <h3>Tu bolsa</h3>
+        <button type="button" class="modal-close" id="cerrar-bolsa" aria-label="Cerrar bolsa">✕</button>
+      </div>
+      <div class="drawer-body" id="items-bolsa">
+        <p class="empty-state">Tu bolsa está vacía.</p>
+      </div>
+      <div class="drawer-footer">
+        <div class="drawer-total">
+          <span>Total estimado:</span>
+          <strong id="total-bolsa">S/ 0.00</strong>
+        </div>
+        <button type="button" class="btn-pill btn-pill--full" id="btn-enviar-whatsapp">
+          Enviar pedido por WhatsApp
+        </button>
+      </div>
+    </aside>
+  </div>
 
-      contenido.querySelectorAll('[data-inc]').forEach((b) => b.addEventListener('click', () => {
-        items[b.dataset.inc].cantidad += 1;
-        guardarBolsa(items);
-        renderBolsa();
-      }));
-      contenido.querySelectorAll('[data-dec]').forEach((b) => b.addEventListener('click', () => {
-        const i = Number(b.dataset.dec);
-        if (items[i].cantidad > 1) items[i].cantidad -= 1;
-        else items.splice(i, 1);
-        guardarBolsa(items);
-        renderBolsa();
-      }));
-      contenido.querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', () => {
-        items.splice(Number(b.dataset.del), 1);
-        guardarBolsa(items);
-        renderBolsa();
-      }));
-    }
-
-    document.getElementById('btn-abrir-bolsa').addEventListener('click', abrirBolsa);
-    document.getElementById('btn-cerrar-bolsa').addEventListener('click', cerrarBolsa);
-    backdrop.addEventListener('click', cerrarBolsa);
-    actualizarContadorUI();
-  </script>
+  <script type="module" src="js/catalogo.js"></script>
+  <script type="module" src="js/bolsa.js"></script>
 </body>
 </html>
