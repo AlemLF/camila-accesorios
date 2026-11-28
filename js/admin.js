@@ -12,6 +12,8 @@ let capturasCache = [];
 let usuariosCache = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
+  registrarEventosPestanas();
+
   perfilActual = await requerirSesionActiva();
   if (!perfilActual) return;
 
@@ -27,7 +29,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('btn-logout')?.addEventListener('click', logout);
 
-  registrarEventosPestanas();
   registrarEventosFormularios();
   await cargarTodo();
 });
@@ -125,7 +126,7 @@ export async function subirImagenMedia(file, carpeta = 'productos') {
     throw new Error('Solo se permiten imágenes JPG, PNG, WEBP o GIF.');
   }
 
-  const maxBytes = 5 * 1024 * 1024; // 5 MB
+  const maxBytes = 5 * 1024 * 1024;
   if (file.size > maxBytes) {
     throw new Error('La imagen no debe superar los 5 MB.');
   }
@@ -824,10 +825,3 @@ function registrarEventosFormularios() {
     alert('Configuración actualizada.');
   });
 }
-```[cite: 13]
-
-### ¿Qué se añadió en este `js/admin.js`?
-* `registrarEventosPestanas()` y `activarPestana()`: ahora al hacer clic en cualquier `.tab-btn[data-tab]` se marca como `.active`, se oculta el panel anterior y se muestra el panel seleccionado.
-* Sincronización de `mostrar_desde`, `novedad` y `es_novedad` al guardar un producto, además de soportar `#prod-color` si llegas a añadirlo en el formulario.
-
-Sube este `js/admin.js` a tu repositorio en GitHub (`main`), espera a que termine el despliegue en Netlify y recarga `admin.html` con `Ctrl + Shift + R`. ¿Ya cambian de pestaña al hacer clic en el menú?
